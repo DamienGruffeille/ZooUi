@@ -1,0 +1,16 @@
+$font-1: helvetica, Arial, sans-serif;
+
+$color-1: #9da79b;
+$color-2: #4b4844;
+$color-3: #dae2d8;
+
+@mixin flex-align($sens, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $sens;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+li {
+  list-style-type: none;
+}

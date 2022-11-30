@@ -1,0 +1,27 @@
+.login {
+  @include flex-align(column);
+  background-color: $color-3;
+  color: $color-2;
+  border: 3px solid;
+  padding: 10px;
+  border-radius: 15px;
+  border-color: $color-2;
+  &__insideBox {
+    @include flex-align(row);
+    &__labels {
+      @include flex-align(column, center, end);
+      margin: 2px;
+      padding: 2px;
+    }
+    &__inputs {
+      @include flex-align(column);
+      margin: 2px;
+      padding: 2px;
+    }
+  }
+  &__button {
+    cursor: pointer;
+    margin-top: 5px;
+    padding: 2px;
+  }
+}
