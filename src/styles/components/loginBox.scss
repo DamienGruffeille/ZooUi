@@ -18,6 +18,9 @@
       @include flex-align(column);
       margin: 2px;
       padding: 2px;
+      &__error {
+        border: 1px solid red;
+      }
     }
   }
   &__button {

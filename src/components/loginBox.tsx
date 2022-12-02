@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const LoginBox = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginFailed, setLoginFailed] = useState(false);
   let navigate = useNavigate();
 
   const submitHandler = async (e: SyntheticEvent) => {
@@ -17,6 +18,7 @@ const LoginBox = () => {
     })
       .then((response) => {
         if (!response.ok) {
+          setLoginFailed(true);
           throw new Error("Failed to login");
         }
         if (response.status === 200) {
@@ -42,20 +44,45 @@ const LoginBox = () => {
           <label htmlFor="identifiant">Identifiant : </label>
           <label htmlFor="password">Mot de passe : </label>
         </div>
-        <div className="login__insideBox__inputs">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Entrez votre adresse mail"
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Entrez votre mot de passe"
-          />
-        </div>
+        {loginFailed === false ? (
+          <div className="login__insideBox__inputs">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Entrez votre adresse mail"
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Entrez votre mot de passe"
+            />
+          </div>
+        ) : (
+          <>
+            <>
+              <div className="login__insideBox__inputs">
+                <input
+                  className="login__insideBox__inputs__error"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Entrez votre adresse mail"
+                />
+                <input
+                  className="login__insideBox__inputs__error"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Entrez votre mot de passe"
+                />
+              </div>
+            </>
+
+            <div className="error">Identifiant / pwd inconnu</div>
+          </>
+        )}
       </div>
       <div>
         <button type="submit" title="bouton valider" className="login__button">
