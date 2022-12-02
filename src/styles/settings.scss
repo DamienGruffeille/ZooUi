@@ -3,6 +3,7 @@ $font-1: helvetica, Arial, sans-serif;
 $color-1: #9da79b;
 $color-2: #4b4844;
 $color-3: #dae2d8;
+$color-4: #70776e;
 
 @mixin flex-align($sens, $justify: center, $align: center) {
   display: flex;

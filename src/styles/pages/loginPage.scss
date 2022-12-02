@@ -1,0 +1,7 @@
+.loginPage {
+  min-height: 100vh;
+  @include flex-align(column);
+  h2 {
+    color: $color-2;
+  }
+}
