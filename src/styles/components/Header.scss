@@ -1,31 +1,59 @@
-header {
-  background-color: $color-4;
-  width: calc(100% - 2px);
+.header {
+    background-color: $color-4;
+    width: calc(100% - 2px);
+    min-height: 5rem;
+    color: $color-2;
+    font-weight: bold;
+    padding: 0 0.25em;
+    z-index: 1;
 
-  color: $color-2;
-  font-weight: bold;
-  padding: 0 0.25em;
-  z-index: 1;
-  @include flex-align(row, space-between, baseline);
-  h1 {
-    font-size: 40px;
-    text-transform: uppercase;
-  }
-  .logout {
-    @include flex-align(row, space-between, baseline);
-    &__name {
-      margin-right: 5px;
+    &__top {
+        @include flex-align(row, space-between, center);
+        h1 {
+            font-size: 40px;
+            text-transform: uppercase;
+        }
+        &__logout {
+            @include flex-align(column, space-between, baseline);
+            &__name {
+                margin-right: 5px;
+            }
+            &__btn {
+                background-color: $color-4;
+                border: none;
+                color: $color-2;
+                cursor: pointer;
+                &:hover {
+                    text-decoration: underline;
+                    font-weight: bold;
+                }
+            }
+        }
     }
-    &__btn {
-      background-color: $color-4;
-      border: none;
-      color: $color-2;
 
-      cursor: pointer;
-      &:hover {
-        text-decoration: underline;
-        font-weight: bold;
-      }
+    &__bottom {
+        &__list {
+            @include flex-align(row, center, baseline);
+            list-style: none;
+            li {
+                margin: 5px;
+                :hover {
+                    border: 1px solid $color-3;
+                    background-color: $color-3;
+                    border-radius: 5px;
+                }
+                &.activeLi {
+                    border: 1px solid $color-3;
+                    background-color: $color-3;
+                    border-radius: 5px;
+                }
+            }
+            a {
+                font-size: 20px;
+                color: $color-2;
+                text-decoration: none;
+                padding: 5px;
+            }
+        }
     }
-  }
 }
