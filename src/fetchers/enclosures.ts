@@ -1,12 +1,8 @@
 import axios from "axios";
 import Enclosure from "../interfaces/enclosures";
+import { createAxiosConfig } from "../functions/createAxiosConfig";
 
-const token = JSON.parse(localStorage.getItem("token") as string);
-const config = {
-    headers: {
-        Authorization: "Bearer " + token
-    }
-};
+const config = createAxiosConfig();
 
 export const fetchEnclosuresByZone = async (zone: string) => {
     console.log("Fetching enclosures by Zone");

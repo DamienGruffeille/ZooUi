@@ -1,5 +1,11 @@
-.specieBlock {
-    position: relative;
+.enclosures {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.enclosureBlock {
     height: 100px;
     width: 160px;
     border: 1px solid $color-2;
@@ -9,5 +15,12 @@
 
     h3 {
         color: $color-2;
+    }
+
+    .specieBlock {
+        border: 1px solid $color-2;
+        border-radius: 5px;
+        margin: 5px;
+        padding: 5px;
     }
 }
