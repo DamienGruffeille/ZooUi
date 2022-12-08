@@ -1,18 +1,7 @@
 import { useEffect, useState } from "react";
 import EnclosureBlock from "../components/EnclosureBlock";
 import Header from "../components/Header";
-
-export interface Employee {
-    _id: string;
-    name: string;
-    firstName: string;
-    email: string;
-    password: string;
-    role: string;
-    zone: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import Employee from "../interfaces/employee";
 
 const HomePage = () => {
     /** Récupération des zones de l'employé */
@@ -37,9 +26,7 @@ const HomePage = () => {
                     <ul></ul>
                 ) : (
                     <ul>
-                        <li className="specieBlock" key={employee?._id}>
-                            <EnclosureBlock zone={employee?.zone} />
-                        </li>
+                        <EnclosureBlock zone={employee?.zone} />
                     </ul>
                 )}
             </main>
