@@ -2,8 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { fetchEnclosuresByZone } from "../fetchers/enclosures";
 import Enclosure from "../interfaces/enclosures";
-import Specie from "../interfaces/specie";
-import { fetchSpecieByEnclosure } from "../fetchers/species";
 
 type EnclosureBlockProps = {
     zone: string;
@@ -21,14 +19,10 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
 
     return (
         <>
-            {species?.forEach((specie) => {
-                // console.log(specie);
-                // console.log(specie.enclosure);
-                // const enclosure = specie.enclosure.zone;
-                // console.log(enclosure);
+            {data.map((enclosure: Enclosure) => {
                 return (
-                    <li className="enclosure" key={specie.enclosure._id}>
-                        <h4>{specie.enclosure.name}</h4>
+                    <li className="specieBlock" key={enclosure?._id}>
+                        <h4>{enclosure?.name}</h4>
                     </li>
                 );
             })}
