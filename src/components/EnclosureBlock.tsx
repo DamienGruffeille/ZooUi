@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { fetchEnclosuresByZone } from "../fetchers/enclosures";
 import Enclosure from "../interfaces/enclosures";
-import SpecieBlock from "../components/SpecieBlock";
+import Specie from "../interfaces/specie";
+import { fetchSpecieByEnclosure } from "../fetchers/species";
 
 type EnclosureBlockProps = {
     zone: string;
@@ -11,30 +12,23 @@ type EnclosureBlockProps = {
 const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
     console.log("Render");
 
-    const { isError, isLoading, data, error } = useQuery({
-        queryKey: ["Enclosures"],
-        queryFn: () => fetchEnclosuresByZone(zone),
-        enabled: true
+    const { data: species } = useQuery({
+        queryKey: ["Species"],
+        queryFn: () => fetchSpecieByEnclosure()
     });
 
-    if (isLoading) {
-        console.log("Loading...");
-        return <div>Loading...</div>;
-    }
-
-    if (isError) {
-        console.log("Error: ", error);
-        return <div>Error...</div>;
-    }
+    console.log(species);
 
     return (
         <>
-            {data.map((enclosure: Enclosure) => {
-                console.log(enclosure);
+            {species?.forEach((specie) => {
+                // console.log(specie);
+                // console.log(specie.enclosure);
+                // const enclosure = specie.enclosure.zone;
+                // console.log(enclosure);
                 return (
-                    <li className="enclosureBlock" key={enclosure?._id}>
-                        <h4>{enclosure?.name}</h4>
-                        <SpecieBlock enclos={enclosure._id} />
+                    <li className="enclosure" key={specie.enclosure._id}>
+                        <h4>{specie.enclosure.name}</h4>
                     </li>
                 );
             })}
