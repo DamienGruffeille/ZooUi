@@ -1,4 +1,5 @@
 .enclosureBlock {
+    @include flex-align(column);
     position: relative;
     // height: 100px;
     // width: 160px;
@@ -7,14 +8,21 @@
     margin: 5px;
     padding: 5px;
 
-    h3 {
+    h4 {
         color: $color-2;
     }
 
-    &__specie {
-        border: 1px solid $color-2;
-        border-radius: 5px;
-        margin: 5px;
-        padding: 5px;
+    &__container {
+        @include flex-align(row);
+        &__specie {
+            @include flex-align(column);
+            border: 1px solid $color-2;
+            border-radius: 5px;
+            margin: 5px;
+            padding: 5px;
+        }
+        &__inoutBtn {
+            @include flex-align(row);
+        }
     }
 }

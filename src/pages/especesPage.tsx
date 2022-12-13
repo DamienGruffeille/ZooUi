@@ -1,14 +1,47 @@
-import React from "react";
+import { ReactElement, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchSpeciesByZone } from "../fetchers/species";
 import Header from "../components/Header";
-import { dropdownSpecies } from "../fetchers/species";
+import Employee from "../interfaces/employee";
 
-const especesPage = () => {
+const employeeLocalStorage = localStorage.getItem("employee");
+
+const EspecesPage = (): ReactElement => {
+    const [employee, setEmployee] = useState<Employee>();
+    useEffect(() => {
+        if (employeeLocalStorage) {
+            setEmployee(JSON.parse(employeeLocalStorage));
+        }
+    }, []);
+
+    const {
+        isError,
+        isLoading,
+        data: species,
+        error
+    } = useQuery({
+        queryKey: ["Species"],
+        queryFn: () => fetchSpeciesByZone(employee!.zone)
+    });
+
+    if (isLoading) {
+        console.log("Loading...");
+        return <div>Loading...</div>;
+    }
+
+    if (isError) {
+        console.log("Error: ", error);
+        return <div>Error...</div>;
+    }
+
     return (
         <>
             <Header />
-            <div>especesPage</div>
+            {species.map((specie) => {
+                return <li key={specie._id}>{specie.name}</li>;
+            })}
         </>
     );
 };
 
-export default especesPage;
+export default EspecesPage;
