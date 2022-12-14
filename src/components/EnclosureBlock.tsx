@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState, ReactElement } from "react";
+import { useState, ReactElement, useEffect } from "react";
 import AsyncSelect from "react-select/async";
 import { fetchAnimalsBySpecy } from "../fetchers/animals";
+import { putSpecieInside, putSpecieOutside } from "../fetchers/postEvent";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
-import ToggleSwitch from "./ToggleSwitch";
 
 type EnclosureBlockProps = {
     zone: string;
@@ -24,7 +24,28 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
 
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [notMovingAnimals, setnotMovingAnimals] = useState<string[]>([]);
+    const [didClickMovementButton, setdidClickMovementButton] = useState(false);
+    const [checkBoxChecked, setCheckBoxChecked] = useState<HTMLInputElement[]>(
+        []
+    );
 
+    /** Si l'employé change d'espèce, le tableau des animaux qui ne
+     * bougent pas est vidé
+     */
+    useEffect(() => {
+        setnotMovingAnimals([]);
+    }, [selectedOption]);
+
+    useEffect(() => {
+        if (didClickMovementButton) {
+            checkBoxChecked.forEach((checkBox) => (checkBox.checked = false));
+        }
+    }, [didClickMovementButton, checkBoxChecked]);
+
+    /** fetch les espèces dans la zone de l'employé
+     * si l'employé est autorisé sur toutes les zones, fetch
+     * toutes les espèces du zoo
+     */
     const loadOptions = (
         inputValue: string,
         callback: (options: Options[]) => void
@@ -59,6 +80,9 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
         }
     };
 
+    /**  Définit l'espèce sélectionnée pour fetch tous les animaux
+     * de cette espèce
+     */
     const onChangeSelectedOption = (e: any) => {
         setSelectedOption(e.value);
     };
@@ -73,21 +97,56 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
         enabled: !!specie
     });
 
+    /** Gestion du tableau des animaux qu'il ne faut pas mouvementer */
     const handleAnimalArray = (e: any) => {
+        console.log("e.target : " + e.target.id);
         console.log(e.target.checked);
         if (e.target.checked) {
             if (!notMovingAnimals.includes(e.target.value)) {
                 setnotMovingAnimals((prev) => [...prev, e.target.value]);
                 console.log("added to array");
             }
+            if (!checkBoxChecked.includes(e.target)) {
+                setCheckBoxChecked((prev) => [...prev, e.target]);
+            }
         } else {
             setnotMovingAnimals((prev) =>
                 prev.filter((animal) => animal !== e.target.value)
             );
+            setCheckBoxChecked((prev) =>
+                prev.filter((checkBox) => checkBox !== e.target)
+            );
         }
     };
 
-    console.log(notMovingAnimals);
+    const handleSubmit = (e: any) => {
+        if (e.target.value === "Sortie") {
+            if (specie) {
+                console.log("Espèce " + specie._id);
+                console.log("eventType " + e.target.value);
+                console.log("Tab animaux pas bougé " + notMovingAnimals);
+
+                putSpecieOutside(specie._id, notMovingAnimals);
+
+                console.log("postEvent a été appelé");
+            } else {
+                console.log("postEvent n'a pas pu être appelé");
+            }
+        } else {
+            if (specie) {
+                console.log("Espèce " + specie._id);
+                console.log("eventType " + e.target.value);
+                console.log("Tab animaux pas bougé " + notMovingAnimals);
+
+                putSpecieInside(specie._id, notMovingAnimals);
+
+                console.log("postEvent a été appelé");
+            } else {
+                console.log("postEvent n'a pas pu être appelé");
+            }
+        }
+        setdidClickMovementButton(true);
+    };
 
     return (
         <>
@@ -99,8 +158,8 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                 onChange={onChangeSelectedOption}
             />
             {specie && (
-                <form key={specie.enclosure._id} className="enclosureBlock">
-                    <h4>{specie.enclosure.name}</h4>
+                <div key={specie.enclosure._id} className="enclosureBlock">
+                    <h3>{specie.enclosure.name}</h3>
                     <div className="enclosureBlock__container">
                         <div
                             key={specie._id}
@@ -114,14 +173,13 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                             key={"position"}
                             className="enclosureBlock__container__specie"
                         >
-                            <span>Modifier position de l'espèce :</span>
-                            <ToggleSwitch labelG="Dedans" labelD="Dehors" />
+                            <h4>Modifier position de l'espèce :</h4>
                             <br />
                             <span>
                                 Sélectionnez les animaux n'ayant pas bougé :
                             </span>
                             <ul>
-                                {animals?.animals.map((animal, index) => {
+                                {animals?.map((animal, index) => {
                                     return (
                                         <li key={index}>
                                             <input
@@ -144,9 +202,29 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                     );
                                 })}
                             </ul>
+                            <br />
+                            <div
+                                key={"buttons"}
+                                className="enclosureBlock__container__specie__btn"
+                            >
+                                <button
+                                    onClick={handleSubmit}
+                                    title="rentrer"
+                                    value={"Entrée"}
+                                >
+                                    Rentrer
+                                </button>
+                                <button
+                                    onClick={handleSubmit}
+                                    title="sortir"
+                                    value={"Sortie"}
+                                >
+                                    Sortir
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </form>
+                </div>
             )}
         </>
     );

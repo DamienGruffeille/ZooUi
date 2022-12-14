@@ -12,7 +12,6 @@ export const fetchAnimalsBySpecy = async (specie: string | undefined) => {
         config
     );
     animals = response.data.animals;
-    const arrayLength = animals.length;
 
-    return { animals, arrayLength };
+    return animals;
 };
