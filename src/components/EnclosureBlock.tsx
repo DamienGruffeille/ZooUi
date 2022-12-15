@@ -1,9 +1,15 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState, ReactElement, useEffect } from "react";
 import AsyncSelect from "react-select/async";
 import { fetchAnimalsBySpecy } from "../fetchers/animals";
-import { putSpecieInside, putSpecieOutside } from "../fetchers/postEvent";
+import {
+    feedSpecie,
+    putSpecieInside,
+    putSpecieOutside,
+    stimulateSpecie
+} from "../fetchers/postEvent";
+import { getLastEvent } from "../fetchers/getEvents";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
 
@@ -25,6 +31,12 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [notMovingAnimals, setnotMovingAnimals] = useState<string[]>([]);
     const [didClickMovementButton, setdidClickMovementButton] = useState(false);
+    const [didClickFeedButton, setdidClickFeedButton] = useState(false);
+    const [dernierNourrissage, setdernierNourrissage] =
+        useState("Pas encore nourris");
+    const [derniereStimulation, setderniereStimulation] = useState(
+        "Pas encore stimulés"
+    );
     const [checkBoxChecked, setCheckBoxChecked] = useState<HTMLInputElement[]>(
         []
     );
@@ -36,6 +48,7 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
         setnotMovingAnimals([]);
     }, [selectedOption]);
 
+    /** Décoche les checkbox à lorsqu'un bouton entrer/sortir est activé */
     useEffect(() => {
         if (didClickMovementButton) {
             checkBoxChecked.forEach((checkBox) => (checkBox.checked = false));
@@ -97,6 +110,46 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
         enabled: !!specie
     });
 
+    const { data: nourrissage, refetch: refetchNourrissage } = useQuery({
+        queryKey: ["FeedEvents", specie],
+        queryFn: () => getLastEvent(specie?._id, "Nourrissage"),
+        enabled: !!specie
+    });
+
+    useEffect(() => {
+        if (didClickFeedButton) {
+            console.log("Feed button activated");
+            refetchNourrissage();
+            console.log("Nourrissage" + nourrissage);
+            if (nourrissage) {
+                console.log("Nourrissage il y a");
+                setdernierNourrissage(
+                    new Intl.DateTimeFormat().format(
+                        Date.parse(nourrissage.createdAt)
+                    )
+                );
+            }
+        }
+    }, [didClickFeedButton]);
+
+    const { data: stimulation, refetch: refetchStimulation } = useQuery({
+        queryKey: ["StimEvents", specie],
+        queryFn: () => getLastEvent(specie?._id, "Stimulation"),
+        enabled: !!specie
+    });
+
+    useEffect(() => {
+        if (stimulation) {
+            setderniereStimulation(
+                new Intl.DateTimeFormat().format(
+                    Date.parse(stimulation.createdAt)
+                )
+            );
+        } else {
+            setderniereStimulation("Pas encore stimulés");
+        }
+    }, [stimulation]);
+
     /** Gestion du tableau des animaux qu'il ne faut pas mouvementer */
     const handleAnimalArray = (e: any) => {
         console.log("e.target : " + e.target.id);
@@ -146,6 +199,20 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
             }
         }
         setdidClickMovementButton(true);
+    };
+
+    const handleFeeding = () => {
+        if (specie) {
+            feedSpecie(specie._id);
+        }
+        setdidClickFeedButton(true);
+    };
+
+    const handleStimulation = () => {
+        if (specie) {
+            stimulateSpecie(specie._id);
+        }
+        refetchStimulation();
     };
 
     return (
@@ -221,6 +288,32 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                 >
                                     Sortir
                                 </button>
+                            </div>
+                        </div>
+                        <div key={"autresActions"}>
+                            <div
+                                key={"nourrir"}
+                                className="enclosureBlock__container__specie"
+                            >
+                                <h4>Nourrissage des animaux :</h4>
+                                <button onClick={handleFeeding}>Nourrir</button>
+                                <br />
+                                <span>
+                                    Dernier nourrissage : {dernierNourrissage}
+                                </span>
+                            </div>
+                            <div
+                                key={"stimuler"}
+                                className="enclosureBlock__container__specie"
+                            >
+                                <h4>Stimulation des animaux :</h4>
+                                <button onClick={handleStimulation}>
+                                    Stimuler
+                                </button>
+                                <br />
+                                <span>
+                                    Dernière stimulation : {derniereStimulation}
+                                </span>
                             </div>
                         </div>
                     </div>

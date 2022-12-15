@@ -40,3 +40,33 @@ export const putSpecieInside = async (
             console.log("Post non effectué", error.message);
         });
 };
+
+export const feedSpecie = async (specieId: string) => {
+    const payLoad = {
+        _id: specieId
+    };
+
+    await axios
+        .put("http://localhost:3000/api/especes/nourrir", payLoad, config)
+        .then((response) => {
+            console.log("Ok nourrissage enregistré", response.data);
+        })
+        .catch((error) => {
+            console.log("Nourrissage non enregistré", error.message);
+        });
+};
+
+export const stimulateSpecie = async (specieId: string) => {
+    const payLoad = {
+        _id: specieId
+    };
+
+    await axios
+        .put("http://localhost:3000/api/especes/stimuler", payLoad, config)
+        .then((response) => {
+            console.log("Ok stimulation enregistrée", response.data);
+        })
+        .catch((error) => {
+            console.log("Stimulation non enregistrée", error.message);
+        });
+};
