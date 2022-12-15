@@ -65,7 +65,6 @@ const SpecieMovementBlock = ({ specie }: Props) => {
                                 name={animal.name}
                                 value={animal._id}
                                 id={`custom-checkbox-${index}`}
-                                // checked={checkedAnimals[index]}
                                 onChange={(e) => handleAnimalArray(e)}
                             />
                             <label htmlFor={`custom-checkbox-${index}`}>

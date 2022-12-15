@@ -1,7 +1,10 @@
 import axios from "axios";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
+import IEvent from "../interfaces/event";
 
 const config = createAxiosConfig();
+
+let event: IEvent;
 
 export const putSpecieOutside = async (
     specieId: string,
@@ -50,10 +53,12 @@ export const feedSpecie = async (specieId: string) => {
         .put("http://localhost:3000/api/especes/nourrir", payLoad, config)
         .then((response) => {
             console.log("Ok nourrissage enregistré", response.data);
+            event = response.data.newEvent;
         })
         .catch((error) => {
             console.log("Nourrissage non enregistré", error.message);
         });
+    return event;
 };
 
 export const stimulateSpecie = async (specieId: string) => {
@@ -65,8 +70,10 @@ export const stimulateSpecie = async (specieId: string) => {
         .put("http://localhost:3000/api/especes/stimuler", payLoad, config)
         .then((response) => {
             console.log("Ok stimulation enregistrée", response.data);
+            event = response.data.newEvent;
         })
         .catch((error) => {
             console.log("Stimulation non enregistrée", error.message);
         });
+    return event;
 };
