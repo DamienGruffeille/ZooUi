@@ -2,14 +2,13 @@ import axios from "axios";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import IEvent from "../interfaces/event";
 
-const config = createAxiosConfig();
-
 let event: IEvent;
 
 export const putSpecieOutside = async (
     specieId: string,
     stillInsideAnimals: string[]
 ) => {
+    const config = createAxiosConfig();
     const payLoad = {
         _id: specieId,
         stillInsideAnimals: stillInsideAnimals
@@ -33,7 +32,7 @@ export const putSpecieInside = async (
         _id: specieId,
         stillOutsideAnimals: stillOutsideAnimals
     };
-
+    const config = createAxiosConfig();
     await axios
         .put("http://localhost:3000/api/especes/rentrer", payLoad, config)
         .then((response) => {
@@ -48,6 +47,8 @@ export const feedSpecie = async (specieId: string) => {
     const payLoad = {
         _id: specieId
     };
+    const config = createAxiosConfig();
+    console.log("Config ZooUI: " + config.headers.Authorization);
 
     await axios
         .put("http://localhost:3000/api/especes/nourrir", payLoad, config)
@@ -65,7 +66,7 @@ export const stimulateSpecie = async (specieId: string) => {
     const payLoad = {
         _id: specieId
     };
-
+    const config = createAxiosConfig();
     await axios
         .put("http://localhost:3000/api/especes/stimuler", payLoad, config)
         .then((response) => {

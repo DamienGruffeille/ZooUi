@@ -2,9 +2,9 @@ import axios from "axios";
 import Specie from "../interfaces/specie";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 
-const config = createAxiosConfig();
 let species: Specie[];
 export const fetchSpeciesByZone = async (zone: string) => {
+    const config = createAxiosConfig();
     console.log("Fetching species " + zone);
     if (zone !== "toutes") {
         const response = await axios.get(

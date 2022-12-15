@@ -19,25 +19,40 @@ const SpecieFeeding = ({ specie }: Props) => {
     });
 
     useEffect(() => {
-        setdernierNourrissage(nourrissage?.createdAt);
+        if (nourrissage) {
+            setdernierNourrissage(
+                new Intl.DateTimeFormat("fr-FR", {
+                    dateStyle: "medium",
+                    timeStyle: "medium",
+                    timeZone: "Europe/Paris"
+                }).format(Date.parse(nourrissage.createdAt))
+            );
+        }
     }, [nourrissage]);
 
     const handleFeeding = async () => {
         let event = await feedSpecie(specie._id);
         if (event !== null) {
-            setdernierNourrissage(event.createdAt);
+            setdernierNourrissage(
+                new Intl.DateTimeFormat("fr-FR", {
+                    dateStyle: "medium",
+                    timeStyle: "medium",
+                    timeZone: "Europe/Paris"
+                }).format(Date.parse(event.createdAt))
+            );
         }
     };
     return (
         <div key={"nourrir"} className="enclosureBlock__container__specie">
             <h4>Nourrissage des animaux :</h4>
-            <button onClick={handleFeeding}>Nourrir</button>
             <br />
             {dernierNourrissage !== undefined ? (
                 <span>Dernier nourrissage : {dernierNourrissage}</span>
             ) : (
                 <span>Dernier nourrissage : Pas encore nourri(s)</span>
             )}
+            <br />
+            <button onClick={handleFeeding}>Nourrir</button>
         </div>
     );
 };

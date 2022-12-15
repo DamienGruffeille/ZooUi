@@ -19,26 +19,41 @@ const SpecieStimulation = ({ specie }: Props) => {
     });
 
     useEffect(() => {
-        setderniereStimulation(stimulation?.createdAt);
+        if (stimulation) {
+            setderniereStimulation(
+                new Intl.DateTimeFormat("fr-FR", {
+                    dateStyle: "medium",
+                    timeStyle: "medium",
+                    timeZone: "Europe/Paris"
+                }).format(Date.parse(stimulation?.createdAt))
+            );
+        }
     }, [stimulation]);
 
     const handleStimulation = async () => {
         let event = await stimulateSpecie(specie._id);
         if (event !== null) {
-            setderniereStimulation(event.createdAt);
+            setderniereStimulation(
+                new Intl.DateTimeFormat("fr-FR", {
+                    dateStyle: "medium",
+                    timeStyle: "medium",
+                    timeZone: "Europe/Paris"
+                }).format(Date.parse(event.createdAt))
+            );
         }
     };
 
     return (
         <div key={"stimuler"} className="enclosureBlock__container__specie">
             <h4>Stimulation des animaux :</h4>
-            <button onClick={handleStimulation}>Stimuler</button>
             <br />
             {derniereStimulation !== undefined ? (
                 <span>Dernière stimulation : {derniereStimulation}</span>
             ) : (
                 <span>Dernière stimulation : Pas encore stimulé</span>
             )}
+            <br />
+            <button onClick={handleStimulation}>Stimuler</button>
         </div>
     );
 };

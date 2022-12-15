@@ -2,9 +2,9 @@ import axios from "axios";
 import Animal from "../interfaces/animal";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 
-const config = createAxiosConfig();
 let animals: Animal[];
 export const fetchAnimalsBySpecy = async (specie: string | undefined) => {
+    const config = createAxiosConfig();
     console.log("Fetching animals " + specie);
 
     const response = await axios.get(
