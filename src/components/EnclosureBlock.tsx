@@ -1,9 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState, ReactElement, useEffect } from "react";
+import { useState, ReactElement } from "react";
 import AsyncSelect from "react-select/async";
-import { stimulateSpecie } from "../fetchers/postEvent";
-import { getLastEvent } from "../fetchers/getEvents";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
 import SpecieMovementBlock from "./SpecieMovementBlock";
