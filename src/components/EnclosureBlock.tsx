@@ -24,11 +24,12 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
     console.log("Render");
 
     const [selectedOption, setSelectedOption] = useState<string>("");
-    const [data, setData] = useState<boolean>();
+    const [specieMovementDetected, setspecieMovementDetected] =
+        useState<boolean>();
 
     const childToParent = (action: boolean) => {
-        console.log("Data : " + action);
-        setData(action);
+        console.log("Parent component, specieMovementDetected : " + action);
+        setspecieMovementDetected(action);
     };
 
     /** fetch les espèces dans la zone de l'employé
@@ -113,7 +114,11 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                         </div>
                     </div>
                     <div>
-                        <AnimalsBlock specie={specie} data={data} />
+                        <AnimalsBlock
+                            specie={specie}
+                            data={specieMovementDetected}
+                            setter={setspecieMovementDetected}
+                        />
                     </div>
                 </>
             )}

@@ -18,10 +18,12 @@ export const putSpecieOutside = async (
         .put("http://localhost:3000/api/especes/sortir", payLoad, config)
         .then((response) => {
             console.log("Ok post effectué", response.data);
+            event = response.data.newEvent;
         })
         .catch((error) => {
             console.log("Post non effectué", error.message);
         });
+    return event;
 };
 
 export const putSpecieInside = async (
@@ -37,10 +39,12 @@ export const putSpecieInside = async (
         .put("http://localhost:3000/api/especes/rentrer", payLoad, config)
         .then((response) => {
             console.log("Ok post effectué", response.data);
+            event = response.data.newEvent;
         })
         .catch((error) => {
             console.log("Post non effectué", error.message);
         });
+    return event;
 };
 
 export const feedSpecie = async (specieId: string) => {

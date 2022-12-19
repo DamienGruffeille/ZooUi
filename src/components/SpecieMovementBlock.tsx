@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAnimalsBySpecy } from "../fetchers/animals";
 import Specie from "../interfaces/specie";
 import { putSpecieInside, putSpecieOutside } from "../fetchers/postEvent";
+import { getLastMovement } from "../fetchers/getEvents";
 
 type Props = {
     specie: Specie;
@@ -16,13 +17,40 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
     );
     const [didClickMovementButton, setdidClickMovementButton] =
         useState<boolean>(true);
+    const [lastEvent, setLastEvent] = useState<string>();
+    const [lastPosition, setLastPosition] = useState<string>();
 
+    /** Fetch des animaux appartenant à l'espèce sélectionnée */
     const { data: animals } = useQuery({
         queryKey: ["Animals", specie],
         queryFn: () => fetchAnimalsBySpecy(specie._id),
         enabled: !!specie
     });
 
+    /** Fetch du dernier Event "mouvement" de l'espèce */
+    const { data: position } = useQuery({
+        queryKey: ["Position", specie],
+        queryFn: () => getLastMovement(specie._id, "Entrée", "Sortie"),
+        enabled: !!specie
+    });
+
+    /** Indication du type et de la date du dernier mouvement enregistré */
+    useEffect(() => {
+        if (position) {
+            setLastEvent(
+                new Intl.DateTimeFormat("fr-FR", {
+                    dateStyle: "medium",
+                    timeStyle: "medium",
+                    timeZone: "Europe/Paris"
+                }).format(Date.parse(position.createdAt))
+            );
+            setLastPosition(position.eventType);
+        }
+    }, [position]);
+
+    /** Gestion du tableau des animaux n'ayant pas bougé et du tableau des
+     * checkboxes
+     */
     const handleAnimalArray = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
             setnotMovingAnimals((prev) => [...prev, e.target.value]);
@@ -37,12 +65,24 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
         }
     };
 
-    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const mouvement = e.target as HTMLButtonElement;
+        let event;
         if (mouvement.value === "Sortie") {
-            putSpecieOutside(specie._id, notMovingAnimals);
+            event = await putSpecieOutside(specie._id, notMovingAnimals);
         } else {
-            putSpecieInside(specie._id, notMovingAnimals);
+            event = await putSpecieInside(specie._id, notMovingAnimals);
+        }
+
+        if (event !== null) {
+            setLastEvent(
+                new Intl.DateTimeFormat("fr-FR", {
+                    dateStyle: "medium",
+                    timeStyle: "medium",
+                    timeZone: "Europe/Paris"
+                }).format(Date.parse(event.createdAt))
+            );
+            setLastPosition(event.eventType);
         }
 
         checkBoxChecked.forEach((checkbox) => (checkbox.checked = false));
@@ -75,6 +115,10 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
                     );
                 })}
             </ul>
+            <br />
+            <div>
+                Dernier mouvement : {lastPosition}, le {lastEvent}
+            </div>
             <br />
             <div
                 key={"buttons"}
