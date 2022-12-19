@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, ReactElement, useEffect } from "react";
+import { useState, ReactElement } from "react";
 import AsyncSelect from "react-select/async";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
