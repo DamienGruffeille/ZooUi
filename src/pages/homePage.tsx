@@ -25,7 +25,9 @@ const HomePage = () => {
                 {employee === null || employee === undefined ? (
                     <ul></ul>
                 ) : (
-                    <EnclosureBlock zone={employee?.zone} />
+                    <>
+                        <EnclosureBlock zone={employee?.zone} />
+                    </>
                 )}
             </main>
         </>
