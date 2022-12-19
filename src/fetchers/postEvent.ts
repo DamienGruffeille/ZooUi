@@ -82,3 +82,21 @@ export const stimulateSpecie = async (specieId: string) => {
         });
     return event;
 };
+
+export const checkEnclosure = async (enclosureId: string) => {
+    const payLoad = {
+        enclosure: enclosureId,
+        observations: []
+    };
+    const config = createAxiosConfig();
+    await axios
+        .post("http://localhost:3000/api/enclos/verifier", payLoad, config)
+        .then((response) => {
+            console.log("Ok vérification enregistrée", response.data);
+            event = response.data.event;
+        })
+        .catch((error) => {
+            console.log("Vérification non enregistrée", error.message);
+        });
+    return event;
+};

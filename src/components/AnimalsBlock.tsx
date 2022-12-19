@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
 import Specie from "../interfaces/specie";
-import { fetchAnimalsBySpecy } from "../fetchers/animals";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import {
+    fetchAnimalsBySpecy,
+    putAnimalInside,
+    putAnimalOutside
+} from "../fetchers/animals";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 type Props = {
     specie: Specie;
@@ -31,8 +35,20 @@ const AnimalsBlock = ({ specie, data, setter }: Props) => {
         }
     }, [setter, refetch, data]);
 
+    const handleMovement = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        const target = e.target as HTMLButtonElement;
+        console.log("Animal à bouger : " + target.value);
+        const animalId = target.value;
+        if (target.innerHTML === "Sortir") {
+            await putAnimalOutside(animalId);
+        } else {
+            await putAnimalInside(animalId);
+        }
+        refetch();
+    };
+
     return (
-        <div className="enclosureBlock">
+        <div className="animalsBlock">
             <ul>
                 {isLoading ? (
                     <li>Loading...</li>
@@ -44,13 +60,28 @@ const AnimalsBlock = ({ specie, data, setter }: Props) => {
                                 <br />
                                 <span>Sexe : {animal.sex}</span>
                                 <br />
-                                <span>{animal.position}</span>
-                                <span>{animal.observations}</span>
-                                <button>
-                                    {animal.position === "Dehors"
-                                        ? "Rentrer"
-                                        : "Sortir"}
-                                </button>
+                                <label>
+                                    Observations :
+                                    <br />
+                                    <textarea
+                                        name="observations"
+                                        id="observations"
+                                        disabled
+                                        value={animal.observations}
+                                    ></textarea>
+                                </label>
+                                <br />
+                                <div className="animalPosition">
+                                    <span>Position : {animal.position}</span>
+                                    <button
+                                        onClick={handleMovement}
+                                        value={animal._id}
+                                    >
+                                        {animal.position === "Dehors"
+                                            ? "Rentrer"
+                                            : "Sortir"}
+                                    </button>
+                                </div>
                             </li>
                         );
                     })
