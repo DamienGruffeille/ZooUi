@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import AnimalsBlock from "../components/AnimalsBlock";
 import EnclosureBlock from "../components/EnclosureBlock";
 import Header from "../components/Header";
 import Employee from "../interfaces/employee";
@@ -28,7 +27,6 @@ const HomePage = () => {
                 ) : (
                     <>
                         <EnclosureBlock zone={employee?.zone} />
-                        <AnimalsBlock />
                     </>
                 )}
             </main>

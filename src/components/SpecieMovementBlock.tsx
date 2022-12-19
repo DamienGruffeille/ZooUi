@@ -6,17 +6,20 @@ import { putSpecieInside, putSpecieOutside } from "../fetchers/postEvent";
 
 type Props = {
     specie: Specie;
+    childToParent: (action: boolean) => void;
 };
 
-const SpecieMovementBlock = ({ specie }: Props) => {
+const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
     const [notMovingAnimals, setnotMovingAnimals] = useState<string[]>([]);
     const [checkBoxChecked, setCheckBoxChecked] = useState<HTMLInputElement[]>(
         []
     );
+    const [didClickMovementButton, setdidClickMovementButton] =
+        useState<boolean>(true);
 
     const { data: animals } = useQuery({
         queryKey: ["Animals", specie],
-        queryFn: () => fetchAnimalsBySpecy(specie?._id),
+        queryFn: () => fetchAnimalsBySpecy(specie._id),
         enabled: !!specie
     });
 
@@ -35,9 +38,6 @@ const SpecieMovementBlock = ({ specie }: Props) => {
     };
 
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-        console.log(notMovingAnimals);
-        console.log(checkBoxChecked);
-        console.log("Bouton déclenché");
         const mouvement = e.target as HTMLButtonElement;
         if (mouvement.value === "Sortie") {
             putSpecieOutside(specie._id, notMovingAnimals);
@@ -48,6 +48,7 @@ const SpecieMovementBlock = ({ specie }: Props) => {
         checkBoxChecked.forEach((checkbox) => (checkbox.checked = false));
         setCheckBoxChecked([]);
         setnotMovingAnimals([]);
+        childToParent(didClickMovementButton);
     };
 
     return (

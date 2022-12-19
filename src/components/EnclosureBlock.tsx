@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useState, ReactElement } from "react";
+import { useState, ReactElement, useEffect } from "react";
 import AsyncSelect from "react-select/async";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
 import SpecieMovementBlock from "./SpecieMovementBlock";
 import SpecieFeeding from "./SpecieFeeding";
 import SpecieStimulation from "./SpecieStimulation";
+import AnimalsBlock from "./AnimalsBlock";
 
 type EnclosureBlockProps = {
     zone: string;
@@ -23,6 +24,12 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
     console.log("Render");
 
     const [selectedOption, setSelectedOption] = useState<string>("");
+    const [data, setData] = useState<boolean>();
+
+    const childToParent = (action: boolean) => {
+        console.log("Data : " + action);
+        setData(action);
+    };
 
     /** fetch les espèces dans la zone de l'employé
      * si l'employé est autorisé sur toutes les zones, fetch
@@ -83,24 +90,32 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                 onChange={onChangeSelectedOption}
             />
             {specie && (
-                <div key={specie.enclosure._id} className="enclosureBlock">
-                    <h3>{specie.enclosure.name}</h3>
-                    <div className="enclosureBlock__container">
-                        <div
-                            key={specie._id}
-                            className="enclosureBlock__container__specie"
-                        >
-                            <img src="" alt="animal" />
-                            <label htmlFor="">{specie.name}</label>
-                        </div>
+                <>
+                    <div key={specie.enclosure._id} className="enclosureBlock">
+                        <h3>{specie.enclosure.name}</h3>
+                        <div className="enclosureBlock__container">
+                            <div
+                                key={specie._id}
+                                className="enclosureBlock__container__specie"
+                            >
+                                <img src="" alt="animal" />
+                                <label htmlFor="">{specie.name}</label>
+                            </div>
 
-                        <SpecieMovementBlock specie={specie} />
-                        <div key={"autresActions"}>
-                            <SpecieFeeding specie={specie} />
-                            <SpecieStimulation specie={specie} />
+                            <SpecieMovementBlock
+                                specie={specie}
+                                childToParent={childToParent}
+                            />
+                            <div key={"autresActions"}>
+                                <SpecieFeeding specie={specie} />
+                                <SpecieStimulation specie={specie} />
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div>
+                        <AnimalsBlock specie={specie} data={data} />
+                    </div>
+                </>
             )}
         </>
     );
