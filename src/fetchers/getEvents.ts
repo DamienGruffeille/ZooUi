@@ -1,4 +1,5 @@
 import axios from "axios";
+import { createAxiosConfig } from "../functions/createAxiosConfig";
 import IEvent from "../interfaces/event";
 
 const token = JSON.parse(localStorage.getItem("token") as string);
@@ -43,5 +44,24 @@ export const getLastMovement = async (
         return event;
     } else {
         return null;
+    }
+};
+
+export const getEventsByZone = async (zoneId: string | undefined) => {
+    const config = createAxiosConfig();
+    if (zoneId !== "toutes") {
+        const response = await axios.get(
+            `http://localhost:3000/api/evenements/zones/${zoneId}`,
+            config
+        );
+        const events: IEvent[] = response.data.events;
+        return events;
+    } else {
+        const response = await axios.get(
+            "http://localhost:3000/api/evenements/get",
+            config
+        );
+        const events: IEvent[] = response.data.events;
+        return events;
     }
 };

@@ -1,0 +1,19 @@
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+.eventList {
+    display: flex;
+    flex-wrap: wrap;
+    &__event {
+        border: 1px solid $color-2;
+        border-radius: 5px;
+        margin: 5px;
+        padding: 5px;
+        width: 320px;
+        height: 120px;
+    }
+}
