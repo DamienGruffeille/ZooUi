@@ -37,8 +37,53 @@
                 cursor: pointer;
             }
         }
-        &__inoutBtn {
-            @include flex-align(row);
+        &__verify {
+            @include flex-align(column);
+            border: 1px solid $color-2;
+            border-radius: 5px;
+            margin: 5px;
+            padding: 5px;
+            button {
+                width: 120px;
+                height: 25px;
+                margin: 5px;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.animalsBlock {
+    position: relative;
+    // height: 100px;
+    // width: 160px;
+    border: 1px solid $color-2;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+
+    ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 5px 0px;
+        grid-template-areas:
+            ". . ."
+            ". . .";
+        li {
+            border: 1px solid $color-2;
+            border-radius: 5px;
+            margin: 5px;
+            padding: 5px;
+            .animalPosition {
+                @include flex-align(row, space-around);
+                button {
+                    padding: 2px;
+                }
+            }
+            .observations {
+                @include flex-align(column);
+            }
         }
     }
 }

@@ -14,9 +14,6 @@ const HomePage = () => {
         }
     }, [employeeLocalStorage]);
 
-    // get enclosures from zone
-
-    // get specy by enclosure
     return (
         <>
             <Header />

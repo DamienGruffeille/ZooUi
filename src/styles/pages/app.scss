@@ -1,15 +1,15 @@
 .App {
-  width: calc(100% - 2px);
-  @include flex-align(column);
-  background-color: #9da79b;
-  body {
+    width: calc(100% - 2px);
     @include flex-align(column);
-  }
+    background-color: #9da79b;
+    // body {
+    //   @include flex-align(column);
+    // }
 }
 
 @media (max-width: 800px) {
-  .heading {
-    margin: 15px 0;
-    font-size: 35px;
-  }
+    .heading {
+        margin: 15px 0;
+        font-size: 35px;
+    }
 }

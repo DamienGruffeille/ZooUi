@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, ReactElement, useEffect } from "react";
+import { useState, ReactElement } from "react";
 import AsyncSelect from "react-select/async";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
@@ -7,6 +7,7 @@ import SpecieMovementBlock from "./SpecieMovementBlock";
 import SpecieFeeding from "./SpecieFeeding";
 import SpecieStimulation from "./SpecieStimulation";
 import AnimalsBlock from "./AnimalsBlock";
+import EnclosureCheck from "./EnclosureCheck";
 
 type EnclosureBlockProps = {
     zone: string;
@@ -102,11 +103,13 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                 <img src="" alt="animal" />
                                 <label htmlFor="">{specie.name}</label>
                             </div>
-
-                            <SpecieMovementBlock
-                                specie={specie}
-                                childToParent={childToParent}
-                            />
+                            <div>
+                                <SpecieMovementBlock
+                                    specie={specie}
+                                    childToParent={childToParent}
+                                />
+                                <EnclosureCheck specie={specie} />
+                            </div>
                             <div key={"autresActions"}>
                                 <SpecieFeeding specie={specie} />
                                 <SpecieStimulation specie={specie} />

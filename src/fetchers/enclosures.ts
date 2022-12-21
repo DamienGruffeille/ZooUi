@@ -8,13 +8,17 @@ const config = {
     }
 };
 
-export const fetchEnclosuresByZone = async (zone: string) => {
+export const fetchEnclosuresByZone = async (zone: string | undefined) => {
     console.log("Fetching enclosures by Zone");
     const response = await axios.get(
         `http://localhost:3000/api/enclos/get/zone/${zone}`,
         config
     );
-    const enclosures: Enclosure[] = response.data.enclosures;
+    if (response.data) {
+        const enclosures: Enclosure[] = response.data.enclosures;
 
-    return enclosures;
+        return enclosures;
+    } else {
+        return null;
+    }
 };

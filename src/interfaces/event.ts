@@ -1,3 +1,4 @@
+import Enclosure from "../interfaces/enclosures";
 export default interface Event {
     _id: string;
     createdBy: string;

@@ -15,18 +15,10 @@ type MenuProps = {
 const Menu = ({ currentPage }: MenuProps): ReactElement => {
     const pages: Pages[] = [
         { id: 1, url: "../home", page: "/home", menuName: "Home" },
-        { id: 2, url: "../zones", page: "/zones", menuName: "Zones" },
-        { id: 3, url: "../enclos", page: "/enclos", menuName: "Enclos" },
+
+        { id: 2, url: "../actions", page: "/actions", menuName: "Actions" },
         {
-            id: 4,
-            url: "../especes",
-            page: "/especes",
-            menuName: "Espèces"
-        },
-        { id: 5, url: "../animaux", page: "/animaux", menuName: "Animaux" },
-        { id: 6, url: "../actions", page: "/actions", menuName: "Actions" },
-        {
-            id: 7,
+            id: 3,
             url: "../evenements",
             page: "/evenements",
             menuName: "Evènements"

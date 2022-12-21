@@ -124,12 +124,24 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
                 key={"buttons"}
                 className="enclosureBlock__container__specie__btn"
             >
-                <button onClick={handleSubmit} title="rentrer" value={"Entrée"}>
-                    Rentrer
-                </button>
-                <button onClick={handleSubmit} title="sortir" value={"Sortie"}>
-                    Sortir
-                </button>
+                {" "}
+                {lastPosition === "Entrée" ? (
+                    <button
+                        onClick={handleSubmit}
+                        title="sortir"
+                        value={"Sortie"}
+                    >
+                        Sortir
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleSubmit}
+                        title="rentrer"
+                        value={"Entrée"}
+                    >
+                        Rentrer
+                    </button>
+                )}
             </div>
         </div>
     );
