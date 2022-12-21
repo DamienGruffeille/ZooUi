@@ -14,18 +14,15 @@ const EvenementsPage = () => {
     const employeeLocalStorage = localStorage.getItem("employee");
     const nbResultats = [50, 30, 25, 20, 15, 10, 5, 1];
     const [employee, setEmployee] = useState<Employee>();
-    const [zonesAvailable, setZonesAvailable] = useState<
-        Zone[] | null | undefined
-    >([]);
-    const [enclosuresAvailable, setEnclosuresAvailable] = useState<
-        Enclosure[] | null | undefined
-    >([]);
+
+    const [zonesList, setZonesList] = useState<Zone[] | null | undefined>([]);
     const [selectedZone, setSelectedZone] = useState<string>();
-    const [selectedRange, setSelectedRange] = useState<number>();
+
+    const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]);
     const [selectedEnclosure, setSelectedEnclosure] = useState<string>();
-    const [enclosureToDisplay, setEnclosureToDisplay] = useState<Enclosure[]>(
-        []
-    );
+
+    const [selectedRange, setSelectedRange] = useState<number>();
+
     const [eventsToDisplay, setEventsToDisplay] = useState<IEvent[]>([]);
 
     useEffect(() => {
@@ -41,7 +38,7 @@ const EvenementsPage = () => {
     });
 
     useEffect(() => {
-        setZonesAvailable(zones);
+        setZonesList(zones);
         setSelectedZone(employee?.zone);
     }, [zones, employee]);
 
@@ -51,30 +48,17 @@ const EvenementsPage = () => {
         enabled: !!employee
     });
 
-    useEffect(() => {
-        setEnclosuresAvailable(enclosures);
-        // enclosures?.forEach((enclosure) => {
-        //     console.log(enclosure._id);
-        // });
-    }, [enclosures]);
-
     const { data: eventsByZone } = useQuery({
         queryKey: ["EventsByZone", employee],
         queryFn: () => getEventsByZone(employee?.zone),
         enabled: !!employee
     });
 
-    // useEffect(() => {
-    //     eventsByZone?.forEach((event) => {
-    //         console.log(event.enclosure);
-    //     });
-    // }, [eventsByZone]);
-
     useEffect(() => {
         console.log(selectedZone);
         if (selectedZone === "toutes") {
             enclosures?.map((enclosure: Enclosure) =>
-                setEnclosureToDisplay((prev) => [...prev, enclosure])
+                setEnclosureList((prev) => [...prev, enclosure])
             );
             if (eventsByZone) {
                 setEventsToDisplay(eventsByZone);
@@ -87,7 +71,7 @@ const EvenementsPage = () => {
                 )
                 .map((enclosure: Enclosure) => {
                     enclos.push(enclosure._id);
-                    setEnclosureToDisplay((prev) => [...prev, enclosure]);
+                    setEnclosureList((prev) => [...prev, enclosure]);
                 });
             eventsByZone
                 ?.filter((event: IEvent) => enclos.includes(event.enclosure))
@@ -99,7 +83,7 @@ const EvenementsPage = () => {
 
     const handleZoneChange = (e: any) => {
         setSelectedZone(e.target.value);
-        setEnclosureToDisplay([]);
+        setEnclosureList([]);
         setEventsToDisplay([]);
     };
 
@@ -125,11 +109,10 @@ const EvenementsPage = () => {
                         name="Zones"
                         id="zones"
                         title="zones"
-                        // defaultValue={employee?.zone}
                         onChange={(e) => handleZoneChange(e)}
                     >
                         {employee?.zone === "toutes"
-                            ? zonesAvailable?.map((zone) => {
+                            ? zonesList?.map((zone) => {
                                   return zone.name === "toutes" ? (
                                       <option
                                           key={zone._id}
@@ -144,7 +127,7 @@ const EvenementsPage = () => {
                                       </option>
                                   );
                               })
-                            : zonesAvailable?.map((zone) => {
+                            : zonesList?.map((zone) => {
                                   return zone._id === employee?.zone ? (
                                       <option key={zone._id} value={zone._id}>
                                           {zone.name}
@@ -158,7 +141,7 @@ const EvenementsPage = () => {
                         title="enclos"
                         onChange={(e) => setSelectedEnclosure(e.target.value)}
                     >
-                        {enclosureToDisplay?.map((enclosure) => {
+                        {enclosureList?.map((enclosure) => {
                             return (
                                 <option value={enclosure._id}>
                                     {enclosure.name}
