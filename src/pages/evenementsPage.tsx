@@ -18,7 +18,9 @@ const EvenementsPage = () => {
     const [zonesList, setZonesList] = useState<Zone[] | null | undefined>([]);
     const [selectedZone, setSelectedZone] = useState<string>();
 
-    const [enclosureList, setEnclosureList] = useState<Enclosure[]>([]);
+    const [enclosureList, setEnclosureList] = useState([
+        { _id: "tous", name: "Tous" }
+    ]);
     const [selectedEnclosure, setSelectedEnclosure] = useState<string>();
 
     const [selectedRange, setSelectedRange] = useState<number>();
@@ -58,7 +60,10 @@ const EvenementsPage = () => {
         console.log(selectedZone);
         if (selectedZone === "toutes") {
             enclosures?.map((enclosure: Enclosure) =>
-                setEnclosureList((prev) => [...prev, enclosure])
+                setEnclosureList((prev) => [
+                    ...prev,
+                    { _id: enclosure._id, name: enclosure.name }
+                ])
             );
             if (eventsByZone) {
                 setEventsToDisplay(eventsByZone);
@@ -71,7 +76,10 @@ const EvenementsPage = () => {
                 )
                 .map((enclosure: Enclosure) => {
                     enclos.push(enclosure._id);
-                    setEnclosureList((prev) => [...prev, enclosure]);
+                    setEnclosureList((prev) => [
+                        ...prev,
+                        { _id: enclosure._id, name: enclosure.name }
+                    ]);
                 });
             eventsByZone
                 ?.filter((event: IEvent) => enclos.includes(event.enclosure))
@@ -83,7 +91,7 @@ const EvenementsPage = () => {
 
     const handleZoneChange = (e: any) => {
         setSelectedZone(e.target.value);
-        setEnclosureList([]);
+        setEnclosureList([{ _id: "tous", name: "Tous" }]);
         setEventsToDisplay([]);
     };
 
