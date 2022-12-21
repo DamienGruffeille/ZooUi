@@ -57,14 +57,13 @@ const EvenementsPage = () => {
     });
 
     const handleZoneChange = (e: any) => {
-        console.log("Changement de zone");
         setSelectedZone(e.target.value);
         setEnclosuresList([{ _id: "tous", name: "Tous" }]);
         setEventsToDisplay([]);
+        setSelectedEnclosure("");
     };
 
     useEffect(() => {
-        console.log(selectedZone);
         if (selectedZone === "toutes") {
             enclosures?.map((enclosure: Enclosure) =>
                 setEnclosuresList((prev) => [
@@ -88,16 +87,17 @@ const EvenementsPage = () => {
                         { _id: enclosure._id, name: enclosure.name }
                     ]);
                 });
+            let n: number = 0;
             eventsByZone
                 ?.filter((event: IEvent) => enclos.includes(event.enclosure))
                 .map((event: IEvent) => {
+                    n = n + 1;
                     setEventsToDisplay((prev) => [...prev, event]);
                 });
         }
     }, [selectedZone, enclosures, eventsByZone]);
 
     const handleEnclosureChange = (e: any) => {
-        console.log("Changement d'enclos");
         setSelectedEnclosure(e.target.value);
         setEventsToDisplay([]);
     };
@@ -124,7 +124,7 @@ const EvenementsPage = () => {
                     setEventsToDisplay((prev) => [...prev, event])
                 );
         }
-    }, [selectedEnclosure, eventsByZone]);
+    }, [selectedEnclosure, eventsByZone, enclosuresList]);
 
     return (
         <>
