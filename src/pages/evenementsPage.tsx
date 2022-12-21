@@ -23,6 +23,10 @@ const EvenementsPage = () => {
     const [selectedZone, setSelectedZone] = useState<string>();
     const [selectedRange, setSelectedRange] = useState<number>();
     const [selectedEnclosure, setSelectedEnclosure] = useState<string>();
+    const [enclosureToDisplay, setEnclosureToDisplay] = useState<Enclosure[]>(
+        []
+    );
+    const [eventsToDisplay, setEventsToDisplay] = useState<IEvent[]>([]);
 
     useEffect(() => {
         if (employeeLocalStorage) {
@@ -38,7 +42,8 @@ const EvenementsPage = () => {
 
     useEffect(() => {
         setZonesAvailable(zones);
-    }, [zones]);
+        setSelectedZone(employee?.zone);
+    }, [zones, employee]);
 
     const { data: enclosures } = useQuery({
         queryKey: ["Enclosures", zones],
@@ -48,9 +53,9 @@ const EvenementsPage = () => {
 
     useEffect(() => {
         setEnclosuresAvailable(enclosures);
-        enclosures?.forEach((enclosure) => {
-            console.log(enclosure._id);
-        });
+        // enclosures?.forEach((enclosure) => {
+        //     console.log(enclosure._id);
+        // });
     }, [enclosures]);
 
     const { data: eventsByZone } = useQuery({
@@ -67,7 +72,36 @@ const EvenementsPage = () => {
 
     useEffect(() => {
         console.log(selectedZone);
-    }, [selectedZone]);
+        if (selectedZone === "toutes") {
+            enclosures?.map((enclosure: Enclosure) =>
+                setEnclosureToDisplay((prev) => [...prev, enclosure])
+            );
+            if (eventsByZone) {
+                setEventsToDisplay(eventsByZone);
+            }
+        } else {
+            let enclos: string[] = [];
+            enclosures
+                ?.filter(
+                    (enclosure: Enclosure) => enclosure.zone === selectedZone
+                )
+                .map((enclosure: Enclosure) => {
+                    enclos.push(enclosure._id);
+                    setEnclosureToDisplay((prev) => [...prev, enclosure]);
+                });
+            eventsByZone
+                ?.filter((event: IEvent) => enclos.includes(event.enclosure))
+                .map((event: IEvent) =>
+                    setEventsToDisplay((prev) => [...prev, event])
+                );
+        }
+    }, [selectedZone, enclosures, eventsByZone]);
+
+    const handleZoneChange = (e: any) => {
+        setSelectedZone(e.target.value);
+        setEnclosureToDisplay([]);
+        setEventsToDisplay([]);
+    };
 
     return (
         <>
@@ -91,9 +125,8 @@ const EvenementsPage = () => {
                         name="Zones"
                         id="zones"
                         title="zones"
-                        onChange={(choice) =>
-                            setSelectedZone(choice.target.value)
-                        }
+                        // defaultValue={employee?.zone}
+                        onChange={(e) => handleZoneChange(e)}
                     >
                         {employee?.zone === "toutes"
                             ? zonesAvailable?.map((zone) => {
@@ -125,7 +158,7 @@ const EvenementsPage = () => {
                         title="enclos"
                         onChange={(e) => setSelectedEnclosure(e.target.value)}
                     >
-                        {enclosures?.map((enclosure) => {
+                        {enclosureToDisplay?.map((enclosure) => {
                             return (
                                 <option value={enclosure._id}>
                                     {enclosure.name}
@@ -135,13 +168,13 @@ const EvenementsPage = () => {
                     </select>
                 </div>
                 <ul className="eventList">
-                    {eventsByZone
+                    {eventsToDisplay
 
-                        ?.filter(
-                            (event: IEvent) =>
-                                event.enclosure === selectedEnclosure
-                        )
-                        .slice(0, selectedRange)
+                        // ?.filter(
+                        //     (event: IEvent) =>
+                        //         event.enclosure === selectedEnclosure
+                        // )
+                        ?.slice(0, selectedRange)
                         .map((event: IEvent) => {
                             return (
                                 <li

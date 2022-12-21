@@ -54,14 +54,22 @@ export const getEventsByZone = async (zoneId: string | undefined) => {
             `http://localhost:3000/api/evenements/zones/${zoneId}`,
             config
         );
-        const events: IEvent[] = response.data.events;
-        return events;
+        if (response.data) {
+            const events: IEvent[] = response.data.events;
+            return events;
+        } else {
+            return null;
+        }
     } else {
         const response = await axios.get(
             "http://localhost:3000/api/evenements/get",
             config
         );
-        const events: IEvent[] = response.data.events;
-        return events;
+        if (response.data) {
+            const events: IEvent[] = response.data.events;
+            return events;
+        } else {
+            return null;
+        }
     }
 };
