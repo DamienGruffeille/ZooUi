@@ -6,7 +6,8 @@ import Zone from "../interfaces/zone";
 import {
     getEventsByZone,
     getEventsByEnclosure,
-    getEventsBySpecie
+    getEventsBySpecie,
+    getEventsByAnimal
 } from "../fetchers/getEvents";
 import { useQuery } from "@tanstack/react-query";
 import { getAllZones } from "../fetchers/zones";
@@ -14,6 +15,7 @@ import { fetchEnclosuresByZone } from "../fetchers/enclosures";
 import Enclosure from "../interfaces/enclosures";
 import { fetchSpeciesByZone } from "../fetchers/species";
 import Specie from "../interfaces/specie";
+import { fetchAllAnimals } from "../fetchers/animals";
 
 const EvenementsPage = () => {
     /** Récupération des zones de l'employé */
@@ -35,6 +37,11 @@ const EvenementsPage = () => {
         { _id: "toutes", name: "Toutes les espèces" }
     ]);
     const [selectedSpecy, setSelectedSpecy] = useState<string>("toutes");
+
+    const [animalsList, setAnimalsList] = useState([
+        { _id: "tous", name: "Tous les animaux" }
+    ]);
+    const [selectedAnimal, setSelectedAnimal] = useState<string>("tous");
 
     const [selectedRange, setSelectedRange] = useState<number>();
 
@@ -113,6 +120,27 @@ const EvenementsPage = () => {
         );
     }, [speciesByZone]);
 
+    /** Fetch les animaux */
+    const { data: animals } = useQuery({
+        queryKey: ["Animaux"],
+        queryFn: () => fetchAllAnimals()
+    });
+
+    /** Insère les animaux dans la liste déroulante */
+    useEffect(() => {
+        let species: string[] = [];
+        speciesByZone?.forEach((specie) => species.push(specie._id));
+
+        animals
+            ?.filter((animal) => species?.includes(animal.specie))
+            .map((animal) =>
+                setAnimalsList((prev) => [
+                    ...prev,
+                    { _id: animal._id, name: animal.name }
+                ])
+            );
+    }, [animals, speciesByZone]);
+
     /** Fetch les évènements de la zone sélectionnée (par défaut celle de l'employé) */
     const { data: eventsByZone } = useQuery({
         queryKey: ["EventsByZone", employeeZone],
@@ -152,10 +180,27 @@ const EvenementsPage = () => {
         if (specie !== "toutes") {
             events = await getEventsBySpecie(specie);
         } else if (selectedEnclosure !== "tous") {
-            console.log(selectedEnclosure);
             events = await getEventsByEnclosure(selectedEnclosure);
         } else {
-            console.log(selectedZone);
+            events = await getEventsByZone(selectedZone);
+        }
+
+        if (events) setEventsToDisplay(events);
+    };
+
+    const handleAnimalChange = async (e: any) => {
+        const animal: string = e.target.value;
+        let events: IEvent[] | null = [];
+
+        setSelectedAnimal(animal);
+
+        if (animal !== "tous") {
+            events = await getEventsByAnimal(animal);
+        } else if (selectedSpecy !== "toutes") {
+            events = await getEventsBySpecie(selectedSpecy);
+        } else if (selectedEnclosure !== "tous") {
+            events = await getEventsByEnclosure(selectedEnclosure);
+        } else {
             events = await getEventsByZone(selectedZone);
         }
 
@@ -184,6 +229,8 @@ const EvenementsPage = () => {
                             );
                         })}
                     </select>
+
+                    {/* Liste déroulante Zones */}
                     <select
                         name="Zones"
                         id="zones"
@@ -199,6 +246,8 @@ const EvenementsPage = () => {
                             );
                         })}
                     </select>
+
+                    {/* Liste déroulante Enclos */}
                     <select
                         name="Enclos"
                         id="enclos"
@@ -217,6 +266,7 @@ const EvenementsPage = () => {
                         })}
                     </select>
 
+                    {/* Liste déroulante Espèces */}
                     <select
                         name="Especes"
                         id="especes"
@@ -227,6 +277,23 @@ const EvenementsPage = () => {
                             return (
                                 <option value={specie._id} key={specie._id}>
                                     {specie.name}
+                                </option>
+                            );
+                        })}
+                    </select>
+
+                    {/* Liste déroulante Animaux */}
+                    <select
+                        name="Animaux"
+                        id="animaux"
+                        title="animaux"
+                        onChange={(e) => handleAnimalChange(e)}
+                    >
+                        {animalsList.map((animal) => {
+                            return (
+                                <option value={animal._id} key={animal._id}>
+                                    {" "}
+                                    {animal.name}
                                 </option>
                             );
                         })}
