@@ -3,7 +3,7 @@ import Specie from "../interfaces/specie";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 
 let species: Specie[];
-export const fetchSpeciesByZone = async (zone: string) => {
+export const fetchSpeciesByZone = async (zone: string | undefined) => {
     const config = createAxiosConfig();
     console.log("Fetching species " + zone);
     if (zone !== "toutes") {

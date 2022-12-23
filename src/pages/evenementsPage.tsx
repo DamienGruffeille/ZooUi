@@ -3,7 +3,11 @@ import Header from "../components/Header";
 import Employee from "../interfaces/employee";
 import IEvent from "../interfaces/event";
 import Zone from "../interfaces/zone";
-import { getEventsByZone } from "../fetchers/getEvents";
+import {
+    getEventsByZone,
+    getEventsByEnclosure,
+    getEventsBySpecie
+} from "../fetchers/getEvents";
 import { useQuery } from "@tanstack/react-query";
 import { getAllZones } from "../fetchers/zones";
 import { fetchEnclosuresByZone } from "../fetchers/enclosures";
@@ -15,179 +19,148 @@ const EvenementsPage = () => {
     /** Récupération des zones de l'employé */
     const employeeLocalStorage = localStorage.getItem("employee");
     const nbResultats = [50, 30, 25, 20, 15, 10, 5, 1];
-    const [employee, setEmployee] = useState<Employee>();
+    const [employeeZone, setEmployeeZone] = useState<string>("");
 
-    const [zonesList, setZonesList] = useState<Zone[] | null | undefined>([]);
+    const [zonesList, setZonesList] = useState([
+        { _id: "toutes", name: "Toutes les zones" }
+    ]);
     const [selectedZone, setSelectedZone] = useState<string>();
 
     const [enclosuresList, setEnclosuresList] = useState([
         { _id: "tous", name: "Tous les enclos" }
     ]);
-    const [selectedEnclosure, setSelectedEnclosure] = useState<string>();
+    const [selectedEnclosure, setSelectedEnclosure] = useState<string>("tous");
 
     const [speciesList, setSpeciesList] = useState([
-        {
-            _id: "toutes",
-            name: "Toutes les espèces"
-        }
+        { _id: "toutes", name: "Toutes les espèces" }
     ]);
-    const [selectedSpecy, setSelectedSpecy] = useState<string>();
+    const [selectedSpecy, setSelectedSpecy] = useState<string>("toutes");
 
     const [selectedRange, setSelectedRange] = useState<number>();
 
     const [eventsToDisplay, setEventsToDisplay] = useState<IEvent[]>([]);
 
+    /** Récupère l'employé stocké dans localStorage pour définir la zone à laquelle il a accès */
     useEffect(() => {
         if (employeeLocalStorage) {
-            setEmployee(JSON.parse(employeeLocalStorage));
+            const employee: Employee = JSON.parse(employeeLocalStorage);
+            setEmployeeZone(employee.zone);
         }
     }, [employeeLocalStorage]);
 
     /** Fetch toutes les zones du zoo */
     const { data: zones } = useQuery({
         queryKey: ["Zones"],
-        queryFn: () => getAllZones()
-        // enabled: employee?.zone === "toutes"
+        queryFn: () => getAllZones(employeeZone),
+        enabled: !!employeeZone
     });
 
     /** Insère les zones dans le menu déroulant zones et sélectionne la zone de l'employé par défaut */
     useEffect(() => {
-        setZonesList(zones);
-        setSelectedZone(employee?.zone);
-    }, [zones, employee]);
+        console.log("Zones : " + zones);
+
+        if (employeeZone === "toutes") {
+            zones
+                ?.filter((zone) => zone._id !== "toutes")
+                .map((zone) =>
+                    setZonesList((prev) => [
+                        ...prev,
+                        { _id: zone._id, name: zone.name }
+                    ])
+                );
+        } else {
+            zones
+                ?.filter((zone) => zone._id === employeeZone)
+                .map((zone) =>
+                    setZonesList([{ _id: zone._id, name: zone.name }])
+                );
+        }
+
+        setSelectedZone(employeeZone);
+    }, [zones, employeeZone]);
 
     /** Fetch les enclos de la zone de l'employé */
     const { data: enclosures } = useQuery({
-        queryKey: ["Enclosures", zones],
-        queryFn: () => fetchEnclosuresByZone(employee?.zone),
-        enabled: !!employee
+        queryKey: ["Enclosures", employeeZone],
+        queryFn: () => fetchEnclosuresByZone(employeeZone),
+        enabled: !!employeeZone
     });
 
-    /** Fetch les évènements de la zone de l'employé */
-    const { data: eventsByZone } = useQuery({
-        queryKey: ["EventsByZone", employee],
-        queryFn: () => getEventsByZone(employee?.zone),
-        enabled: !!employee
-    });
+    /** Insère les enclos dans la liste déroulante */
+    useEffect(() => {
+        enclosures?.map((enclosure) =>
+            setEnclosuresList((prev) => [
+                ...prev,
+                { _id: enclosure._id, name: enclosure.name }
+            ])
+        );
+    }, [enclosures]);
 
+    /** Fetch les espèces de la zone de l'employé */
     const { data: speciesByZone } = useQuery({
-        queryKey: ["SpeciesByZone", employee],
-        queryFn: () => fetchSpeciesByZone(employee?.zone),
-        enabled: !!employee
+        queryKey: ["SpeciesByZone", employeeZone],
+        queryFn: () => fetchSpeciesByZone(employeeZone),
+        enabled: !!employeeZone
     });
 
-    /** Gestion du changement de sélection de zone */
-    const handleZoneChange = (e: any) => {
-        setSelectedZone(e.target.value);
-        setEnclosuresList([{ _id: "tous", name: "Tous les enclos" }]);
-        setEventsToDisplay([]);
-        setSelectedEnclosure("");
-    };
-
-    /** Gestion des évènements à afficher au chargement de la page et modification des évènements à afficher à la sélection d'une zone */
+    /** Insère les espèces dans la liste déroulante */
     useEffect(() => {
-        if (selectedZone === "toutes") {
-            enclosures?.map((enclosure: Enclosure) =>
-                setEnclosuresList((prev) => [
-                    ...prev,
-                    { _id: enclosure._id, name: enclosure.name }
-                ])
-            );
-            if (eventsByZone) {
-                setEventsToDisplay(eventsByZone);
-            }
-        } else {
-            /** Filtre les enclos disponibles dans la liste en fonction de la zone sélectionnée */
-            let enclos: string[] = [];
-            enclosures
-                ?.filter(
-                    (enclosure: Enclosure) => enclosure.zone === selectedZone
-                )
-                .map((enclosure: Enclosure) => {
-                    enclos.push(enclosure._id);
-                    setEnclosuresList((prev) => [
-                        ...prev,
-                        { _id: enclosure._id, name: enclosure.name }
-                    ]);
-                    return enclos;
-                });
-
-            let n: number = 0;
-            /** Filtre les évènements en fonction de la zone sélectionné */
-            eventsByZone
-                ?.filter((event: IEvent) => enclos.includes(event.enclosure))
-                .map((event: IEvent) => {
-                    n = n + 1;
-                    setEventsToDisplay((prev) => [...prev, event]);
-                    return n;
-                });
-        }
-    }, [selectedZone, enclosures, eventsByZone]);
-
-    /** Gestion du changement de sélection de l'enclos */
-    const handleEnclosureChange = (e: any) => {
-        setSelectedEnclosure(e.target.value);
-        setEventsToDisplay([]);
-        setSpeciesList([
-            {
-                _id: "toutes",
-                name: "Toutes les espèces"
-            }
-        ]);
-    };
-
-    /** Gestion des évènements à afficher à la sélection d'un enclos */
-    useEffect(() => {
-        if (selectedEnclosure === "tous") {
-            let enclos: string[] = [];
-            enclosuresList.forEach((enclosure) => {
-                if (enclosure._id !== "tous") {
-                    enclos.push(enclosure._id);
-                }
-            });
-            eventsByZone
-                ?.filter((event: IEvent) => enclos.includes(event.enclosure))
-                .map((event: IEvent) =>
-                    setEventsToDisplay((prev) => [...prev, event])
-                );
-        } else {
-            eventsByZone
-                ?.filter(
-                    (event: IEvent) => event.enclosure === selectedEnclosure
-                )
-                .map((event: IEvent) =>
-                    setEventsToDisplay((prev) => [...prev, event])
-                );
-
-            speciesByZone
-                ?.filter((specie) => specie.enclosure._id === selectedEnclosure)
-                .map((specie) => setSpeciesList((prev) => [...prev, specie]));
-        }
-    }, [selectedEnclosure, eventsByZone, enclosuresList, speciesByZone]);
-
-    const handleSpecyChange = (e: any) => {
-        setSelectedSpecy(e.target.value);
-        setEventsToDisplay([]);
-    };
-
-    useEffect(() => {
-        if (speciesByZone) {
-            speciesByZone.map((specie: Specie) =>
-                setSpeciesList((prev) => [
-                    ...prev,
-                    { _id: specie._id, name: specie.name }
-                ])
-            );
-        }
+        speciesByZone?.map((specy) =>
+            setSpeciesList((prev) => [
+                ...prev,
+                { _id: specy._id, name: specy.name }
+            ])
+        );
     }, [speciesByZone]);
 
+    /** Fetch les évènements de la zone sélectionnée (par défaut celle de l'employé) */
+    const { data: eventsByZone } = useQuery({
+        queryKey: ["EventsByZone", employeeZone],
+        queryFn: () => getEventsByZone(selectedZone),
+        enabled: !!selectedZone
+    });
+
+    /** Affichage des évènements */
     useEffect(() => {
-        eventsByZone
-            ?.filter((event) => event.specie === selectedSpecy)
-            .map((event) => {
-                setEventsToDisplay((prev) => [...prev, event]);
-            });
-    }, [selectedSpecy, eventsByZone]);
+        if (eventsByZone) setEventsToDisplay(eventsByZone);
+    }, [eventsByZone]);
+
+    /** Gestion du changement de sélection de zone */
+    const handleZoneChange = async (e: any) => {
+        setSelectedZone(e.target.value);
+        const events = await getEventsByZone(e.target.value);
+        if (events) setEventsToDisplay(events);
+    };
+
+    /** Gestion du changement de sélection de l'enclos */
+    const handleEnclosureChange = async (e: any) => {
+        const enclos: string = e.target.value;
+        let events: IEvent[] | null = [];
+        setSelectedEnclosure(enclos);
+        enclos !== "tous"
+            ? (events = await getEventsByEnclosure(enclos))
+            : (events = await getEventsByZone(selectedZone));
+        if (events) setEventsToDisplay(events);
+    };
+
+    const handleSpecyChange = async (e: any) => {
+        const specie: string = e.target.value;
+        let events: IEvent[] | null = [];
+
+        setSelectedSpecy(specie);
+
+        if (specie !== "toutes") {
+            events = await getEventsBySpecie(specie);
+        } else if (selectedEnclosure !== "tous") {
+            console.log(selectedEnclosure);
+            events = await getEventsByEnclosure(selectedEnclosure);
+        } else {
+            console.log(selectedZone);
+            events = await getEventsByZone(selectedZone);
+        }
+
+        if (events) setEventsToDisplay(events);
+    };
 
     return (
         <>
@@ -218,21 +191,13 @@ const EvenementsPage = () => {
                         value={selectedZone}
                         onChange={(e) => handleZoneChange(e)}
                     >
-                        {employee?.zone === "toutes"
-                            ? zonesList?.map((zone) => {
-                                  return (
-                                      <option key={zone._id} value={zone._id}>
-                                          {zone.name}
-                                      </option>
-                                  );
-                              })
-                            : zonesList?.map((zone) => {
-                                  return zone._id === employee?.zone ? (
-                                      <option key={zone._id} value={zone._id}>
-                                          {zone.name}
-                                      </option>
-                                  ) : null;
-                              })}
+                        {zonesList?.map((zone) => {
+                            return (
+                                <option value={zone._id} key={zone._id}>
+                                    {zone.name}
+                                </option>
+                            );
+                        })}
                     </select>
                     <select
                         name="Enclos"
@@ -251,15 +216,16 @@ const EvenementsPage = () => {
                             );
                         })}
                     </select>
+
                     <select
                         name="Especes"
                         id="especes"
                         title="especes"
                         onChange={(e) => handleSpecyChange(e)}
                     >
-                        {speciesList.map((specie) => {
+                        {speciesList?.map((specie) => {
                             return (
-                                <option value={specie._id}>
+                                <option value={specie._id} key={specie._id}>
                                     {specie.name}
                                 </option>
                             );
@@ -280,7 +246,7 @@ const EvenementsPage = () => {
                                     key={event._id}
                                     className="eventList__event"
                                 >
-                                    <span>Enclos : {event.enclosure}</span>
+                                    <span>Enclos : {event.enclosure.name}</span>
                                     <br />
                                     <span>Espèce : {event.specie}</span>
                                     <br />

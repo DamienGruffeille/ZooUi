@@ -73,3 +73,34 @@ export const getEventsByZone = async (zoneId: string | undefined) => {
         }
     }
 };
+
+export const getEventsByEnclosure = async (enclosureId: string | undefined) => {
+    const config = createAxiosConfig();
+
+    const response = await axios.get(
+        `http://localhost:3000/api/evenements/enclos/${enclosureId}`,
+        config
+    );
+    if (response.data) {
+        const events: IEvent[] = response.data.events;
+        return events;
+    } else {
+        return null;
+    }
+};
+
+export const getEventsBySpecie = async (specieId: string | undefined) => {
+    const config = createAxiosConfig();
+
+    const response = await axios.get(
+        `http://localhost:3000/api/evenements/especes/${specieId}`,
+        config
+    );
+
+    if (response.data) {
+        const events: IEvent[] = response.data.events;
+        return events;
+    } else {
+        return null;
+    }
+};
