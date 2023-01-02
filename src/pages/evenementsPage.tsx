@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Employee from "../interfaces/employee";
 import IEvent from "../interfaces/event";
-import Zone from "../interfaces/zone";
 import {
     getEventsByZone,
     getEventsByEnclosure,
@@ -12,9 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getAllZones } from "../fetchers/zones";
 import { fetchEnclosuresByZone } from "../fetchers/enclosures";
-import Enclosure from "../interfaces/enclosures";
 import { fetchSpeciesByZone } from "../fetchers/species";
-import Specie from "../interfaces/specie";
 import { fetchAllAnimals } from "../fetchers/animals";
 
 const EvenementsPage = () => {
@@ -46,17 +43,17 @@ const EvenementsPage = () => {
     const [enclosuresList, setEnclosuresList] = useState([
         { _id: "tous", name: "Tous les enclos" }
     ]);
-    const [selectedEnclosure, setSelectedEnclosure] = useState<string>("tous");
+    const [selectedEnclosure, setSelectedEnclosure] = useState<string>();
 
     const [speciesList, setSpeciesList] = useState([
         { _id: "toutes", name: "Toutes les espèces" }
     ]);
-    const [selectedSpecy, setSelectedSpecy] = useState<string>("toutes");
+    const [selectedSpecy, setSelectedSpecy] = useState<string>();
 
     const [animalsList, setAnimalsList] = useState([
         { _id: "tous", name: "Tous les animaux" }
     ]);
-    const [selectedAnimal, setSelectedAnimal] = useState<string>("tous");
+    const [selectedAnimal, setSelectedAnimal] = useState<string>();
 
     const [selectedRange, setSelectedRange] = useState<number>();
 
@@ -112,24 +109,14 @@ const EvenementsPage = () => {
 
     /** Insère les enclos dans la liste déroulante */
     useEffect(() => {
-        if (selectedZone === "toutes") {
-            enclosures?.map((enclosure) =>
-                setEnclosuresList((prev) => [
-                    ...prev,
-                    { _id: enclosure._id, name: enclosure.name }
-                ])
-            );
-        } else {
-            enclosures
-                ?.filter((enclosure) => enclosure.zone === selectedZone)
-                .map((enclosure) =>
-                    setEnclosuresList((prev) => [
-                        ...prev,
-                        { _id: enclosure._id, name: enclosure.name }
-                    ])
-                );
-        }
-    }, [enclosures, selectedZone]);
+        enclosures?.map((enclosure) =>
+            setEnclosuresList((prev) => [
+                ...prev,
+                { _id: enclosure._id, name: enclosure.name }
+            ])
+        );
+        setSelectedEnclosure("tous");
+    }, [enclosures]);
 
     /** Fetch les espèces de la zone de l'employé */
     const { data: speciesByZone } = useQuery({
@@ -146,6 +133,7 @@ const EvenementsPage = () => {
                 { _id: specy._id, name: specy.name }
             ])
         );
+        setSelectedSpecy("toutes");
     }, [speciesByZone]);
 
     /** Fetch les animaux */
@@ -167,6 +155,7 @@ const EvenementsPage = () => {
                     { _id: animal._id, name: animal.name }
                 ])
             );
+        setSelectedAnimal("tous");
     }, [animals, speciesByZone]);
 
     /** Fetch les évènements de la zone sélectionnée (par défaut celle de l'employé) */
@@ -235,13 +224,13 @@ const EvenementsPage = () => {
     };
 
     const handleAnimalChange = async (e: any) => {
-        const animal: string = e.target.value;
+        const _animal: string = e.target.value;
         let events: IEvent[] | null = [];
 
-        setSelectedAnimal(animal);
+        setSelectedAnimal(_animal);
 
-        if (animal !== "tous") {
-            events = await getEventsByAnimal(animal);
+        if (_animal !== "tous") {
+            events = await getEventsByAnimal(_animal);
         } else if (selectedSpecy !== "toutes") {
             events = await getEventsBySpecie(selectedSpecy);
         } else if (selectedEnclosure !== "tous") {
@@ -256,22 +245,6 @@ const EvenementsPage = () => {
             setEventsToDisplay([]);
         }
     };
-
-    const handleEventTypeChange = async (e: any) => {
-        const eventType = e.target.value;
-        let events: IEvent[] = [];
-
-        /**  TODO : créer un EventsToDisplayFiltered où seront stockés les events
-         * filtrés par type d'event.
-         * Si EventsToDisplayFiltered.length !== 0 alors je l'affiche
-         * sinon j'affiche EventsToDisplay
-         * ainsi une fois "Tous les évènements" sélectionnés je peux réafficher la liste affichée précedemment
-         */
-    };
-
-    useEffect(() => {
-        console.log("Nbre d'events : " + eventsToDisplay.length);
-    }, [eventsToDisplay]);
 
     return (
         <>
@@ -297,6 +270,7 @@ const EvenementsPage = () => {
                     </select>
 
                     {/* Liste déroulante Zones */}
+                    <label htmlFor="zones">Par zone : </label>
                     <select
                         name="Zones"
                         id="zones"
@@ -314,6 +288,7 @@ const EvenementsPage = () => {
                     </select>
 
                     {/* Liste déroulante Enclos */}
+                    <label htmlFor="enclos">Par enclos : </label>
                     <select
                         name="Enclos"
                         id="enclos"
@@ -333,6 +308,7 @@ const EvenementsPage = () => {
                     </select>
 
                     {/* Liste déroulante Espèces */}
+                    <label htmlFor="especies">Par espèce : </label>
                     <select
                         name="Especes"
                         id="especes"
@@ -349,6 +325,7 @@ const EvenementsPage = () => {
                     </select>
 
                     {/* Liste déroulante Animaux */}
+                    <label htmlFor="animaux">Par animal : </label>
                     <select
                         name="Animaux"
                         id="animaux"
@@ -360,21 +337,6 @@ const EvenementsPage = () => {
                                 <option value={animal._id} key={animal._id}>
                                     {" "}
                                     {animal.name}
-                                </option>
-                            );
-                        })}
-                    </select>
-
-                    {/* Liste déroulante types d'évènements */}
-                    <select
-                        name="eventType"
-                        id="eventType"
-                        title="Type d'évènement"
-                    >
-                        {eventTypes.map((eventType) => {
-                            return (
-                                <option value={eventType} key={eventType}>
-                                    {eventType}
                                 </option>
                             );
                         })}
