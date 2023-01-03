@@ -55,7 +55,7 @@ const EnclosureCheck = ({ specie }: Props) => {
     };
 
     return (
-        <div className="container__actions__action">
+        <div className="container__actions__verify">
             <h4>Vérification de l'enclos :</h4>
             <div>Dernière vérification le : {derniereVerif}</div>
             {employee?.role === "Vétérinaire" ||

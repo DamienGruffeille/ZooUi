@@ -28,8 +28,7 @@ const ActionsBlock = ({ specie }: Props) => {
 
             actions
                 .filter((action) => action.status === "Terminée")
-                .sort()
-                .slice(-3)
+                .slice(0, 3)
                 .forEach((action) =>
                     setActionsDone((prev) => [...prev, action])
                 );
@@ -47,7 +46,7 @@ const ActionsBlock = ({ specie }: Props) => {
     };
 
     return (
-        <div className="container__small">
+        <li className="container__small">
             <h3>Prochaines actions à réaliser :</h3>
             <ul>
                 {actionsToDisplay.length > 0 ? (
@@ -91,7 +90,7 @@ const ActionsBlock = ({ specie }: Props) => {
                     <li>Aucune action réalisée</li>
                 )}
             </ul>
-        </div>
+        </li>
     );
 };
 

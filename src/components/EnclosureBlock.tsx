@@ -9,6 +9,7 @@ import SpecieStimulation from "./SpecieStimulation";
 import AnimalsBlock from "./AnimalsBlock";
 import EnclosureCheck from "./EnclosureCheck";
 import ActionsBlock from "./actionsBlock";
+import EventsBlock from "./eventsBlock";
 
 type EnclosureBlockProps = {
     zone: string;
@@ -77,6 +78,7 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
      */
     const onChangeSelectedOption = (e: any) => {
         setSelectedOption(e.value);
+        console.log("L'espèce a changé");
     };
 
     const specie: Specie | undefined = species.find((specie) => {
@@ -92,10 +94,10 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                 placeholder="Sélectionner l'espèce"
                 onChange={onChangeSelectedOption}
             />
-            <div className="outside--container">
-                <div className="container__small">
-                    {specie && (
-                        <>
+            <ul className="outside--container">
+                {specie && (
+                    <>
+                        <li className="container__small">
                             <div className="container__id">
                                 <h3>Enclos : {specie.enclosure.name}</h3>
                                 <span>Zone : {specie.enclosure.zone}</span>
@@ -107,23 +109,18 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                             <div className="container__action">
                                 <EnclosureCheck specie={specie} />
                             </div>
-                        </>
-                    )}
-                </div>
-                {specie && <ActionsBlock specie={selectedOption} />}
-                <div className="container__small">
-                    <h3>Evènements</h3>
-                    <span>Il y aura le dernier évènement</span>
-                    <br />
-                    <span>Puis l'avant-dernier</span>
-                    <br />
-                    <span>Et l'avant avant-dernier</span>
-                </div>
-            </div>
+                        </li>
+
+                        <ActionsBlock specie={selectedOption} />
+
+                        <EventsBlock specie={selectedOption} />
+                    </>
+                )}
+            </ul>
 
             <div className="outside--container">
-                <div className="container__big">
-                    {specie && (
+                {specie && (
+                    <div className="container__big">
                         <>
                             <h3>Espèce : {specie.name}</h3>
 
@@ -149,8 +146,8 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                 <SpecieStimulation specie={specie} />
                             </div>
                         </>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             <div>
