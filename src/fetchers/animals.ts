@@ -4,6 +4,20 @@ import { createAxiosConfig } from "../functions/createAxiosConfig";
 import IEvent from "../interfaces/event";
 
 let animals: Animal[];
+
+export const fetchAllAnimals = async () => {
+    const config = createAxiosConfig();
+
+    const response = await axios.get(
+        `http://localhost:3000/api/animaux/get`,
+        config
+    );
+
+    animals = response.data.animals;
+
+    return animals;
+};
+
 export const fetchAnimalsBySpecy = async (specie: string | undefined) => {
     const config = createAxiosConfig();
     console.log("Fetching animals " + specie);
