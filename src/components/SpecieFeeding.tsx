@@ -43,7 +43,7 @@ const SpecieFeeding = ({ specie }: Props) => {
         }
     };
     return (
-        <div key={"nourrir"} className="enclosureBlock__container__specie">
+        <div key={"nourrir"} className="container__actions__action">
             <h4>Nourrissage des animaux :</h4>
             <br />
             {dernierNourrissage !== undefined ? (

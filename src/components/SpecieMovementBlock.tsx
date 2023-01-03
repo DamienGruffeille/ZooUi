@@ -92,7 +92,7 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
     };
 
     return (
-        <div key={"position"} className="enclosureBlock__container__specie">
+        <div key={"position"} className="container__actions__action">
             <h4>Modifier position de l'espèce :</h4>
             <br />
             <span>Sélectionnez les animaux n'ayant pas bougé :</span>

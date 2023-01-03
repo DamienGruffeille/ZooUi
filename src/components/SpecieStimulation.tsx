@@ -44,7 +44,7 @@ const SpecieStimulation = ({ specie }: Props) => {
     };
 
     return (
-        <div key={"stimuler"} className="enclosureBlock__container__specie">
+        <div key={"stimuler"} className="container__actions__action">
             <h4>Stimulation des animaux :</h4>
             <br />
             {derniereStimulation !== undefined ? (
