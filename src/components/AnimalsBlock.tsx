@@ -48,8 +48,9 @@ const AnimalsBlock = ({ specie, data, setter }: Props) => {
     };
 
     return (
-        <div className="animalsBlock">
-            <ul>
+        <>
+            <h3 className="bottom-container__title">Animaux</h3>
+            <ul className="bottom-container__list">
                 {isLoading ? (
                     <li>Loading...</li>
                 ) : (
@@ -87,7 +88,7 @@ const AnimalsBlock = ({ specie, data, setter }: Props) => {
                     })
                 )}
             </ul>
-        </div>
+        </>
     );
 };
 

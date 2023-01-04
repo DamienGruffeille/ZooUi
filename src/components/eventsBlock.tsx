@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getEventsBySpecie } from "../fetchers/getEvents";
 import IEvent from "../interfaces/event";
 
@@ -25,7 +25,7 @@ const EventsBlock = ({ specie }: Props) => {
     }, [events]);
 
     return (
-        <li className="container__small">
+        <div className="upper-container__inside">
             <h3>Derniers evènements :</h3>
             <ul>
                 {eventsToDisplay.length > 0 ? (
@@ -44,7 +44,7 @@ const EventsBlock = ({ specie }: Props) => {
                     <li>Aucun évènement à afficher</li>
                 )}
             </ul>
-        </li>
+        </div>
     );
 };
 

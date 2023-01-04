@@ -96,7 +96,7 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
             <h4>Modifier position de l'espèce :</h4>
             <br />
             <span>Sélectionnez les animaux n'ayant pas bougé :</span>
-            <ul>
+            <ul className="bottom-container__list">
                 {animals?.map((animal, index) => {
                     return (
                         <li key={index}>
@@ -117,14 +117,7 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
             </ul>
             <br />
             <div>
-                Dernier mouvement : {lastPosition}, le {lastEvent}
-            </div>
-            <br />
-            <div
-                key={"buttons"}
-                className="enclosureBlock__container__specie__btn"
-            >
-                {" "}
+                Dernier mouvement : {lastPosition}, le {lastEvent}{" "}
                 {lastPosition === "Entrée" ? (
                     <button
                         onClick={handleSubmit}

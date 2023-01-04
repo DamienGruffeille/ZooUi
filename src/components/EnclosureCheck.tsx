@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getLastEvent } from "../fetchers/getEvents";
 import { checkEnclosure } from "../fetchers/postEvent";
 import Specie from "../interfaces/specie";
@@ -37,6 +37,8 @@ const EnclosureCheck = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(verif.createdAt))
             );
+        } else {
+            setDerniereVerif("Enclos jamais vérifié");
         }
     }, [verif]);
 
@@ -55,15 +57,15 @@ const EnclosureCheck = ({ specie }: Props) => {
     };
 
     return (
-        <div className="container__actions__verify">
+        <div>
             <h4>Vérification de l'enclos :</h4>
-            <div>Dernière vérification le : {derniereVerif}</div>
+            <span>Dernière vérification le : {derniereVerif}</span>
             {employee?.role === "Vétérinaire" ||
             employee?.role === "Responsable" ? (
                 <button onClick={handleClick}>Enclos vérifié</button>
             ) : (
                 <button onClick={handleClick} disabled>
-                    Enclos vérifié
+                    Vérifier
                 </button>
             )}
         </div>

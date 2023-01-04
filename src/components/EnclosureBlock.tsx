@@ -94,11 +94,11 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                 placeholder="Sélectionner l'espèce"
                 onChange={onChangeSelectedOption}
             />
-            <ul className="outside--container">
+            <div className="upper-container">
                 {specie && (
                     <>
-                        <li className="container__small">
-                            <div className="container__id">
+                        <div className="upper-container__inside">
+                            <div>
                                 <h3>Enclos : {specie.enclosure.name}</h3>
                                 <span>Zone : {specie.enclosure.zone}</span>
                                 <br />
@@ -106,57 +106,55 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                     Superficie : {specie.enclosure.surface_area}
                                 </span>
                             </div>
-                            <div className="container__action">
+                            <div>
                                 <EnclosureCheck specie={specie} />
                             </div>
-                        </li>
+                        </div>
 
                         <ActionsBlock specie={selectedOption} />
 
                         <EventsBlock specie={selectedOption} />
                     </>
                 )}
-            </ul>
-
-            <div className="outside--container">
-                {specie && (
-                    <div className="container__big">
-                        <>
-                            <h3>Espèce : {specie.name}</h3>
-
-                            <img src="" alt="animal" />
-                            {/* <label htmlFor="">{specie.name}</label> */}
-                            <br />
-                            <span>
-                                {specie?.dangerous
-                                    ? "Dangereux"
-                                    : "Non dangereux"}
-                            </span>
-                            <br />
-                            <span>
-                                {specie?.sociable ? "Sociable" : "Non sociable"}
-                            </span>
-
-                            <div className="container__actions">
-                                <SpecieMovementBlock
-                                    specie={specie}
-                                    childToParent={childToParent}
-                                />
-                                <SpecieFeeding specie={specie} />
-                                <SpecieStimulation specie={specie} />
-                            </div>
-                        </>
-                    </div>
-                )}
             </div>
 
-            <div>
+            <div className="bottom-container">
                 {specie && (
-                    <AnimalsBlock
-                        specie={specie}
-                        data={specieMovementDetected}
-                        setter={setspecieMovementDetected}
-                    />
+                    <>
+                        <div className="bottom-container__inside">
+                            <div>
+                                <h3>Espèce : {specie.name}</h3>
+
+                                <img src="" alt="animal" />
+                                <br />
+                                <span>
+                                    {specie?.dangerous
+                                        ? "Dangereux"
+                                        : "Non dangereux"}
+                                </span>
+                                <br />
+                                <span>
+                                    {specie?.sociable
+                                        ? "Sociable"
+                                        : "Non sociable"}
+                                </span>
+                            </div>
+                            <SpecieMovementBlock
+                                specie={specie}
+                                childToParent={childToParent}
+                            />
+                            <SpecieFeeding specie={specie} />
+                            <SpecieStimulation specie={specie} />
+                        </div>
+
+                        <div>
+                            <AnimalsBlock
+                                specie={specie}
+                                data={specieMovementDetected}
+                                setter={setspecieMovementDetected}
+                            />
+                        </div>
+                    </>
                 )}
             </div>
         </>

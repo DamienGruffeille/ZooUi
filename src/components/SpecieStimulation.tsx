@@ -44,7 +44,7 @@ const SpecieStimulation = ({ specie }: Props) => {
     };
 
     return (
-        <div key={"stimuler"} className="container__actions__action">
+        <div key={"stimuler"}>
             <h4>Stimulation des animaux :</h4>
             <br />
             {derniereStimulation !== undefined ? (
@@ -52,7 +52,7 @@ const SpecieStimulation = ({ specie }: Props) => {
             ) : (
                 <span>Dernière stimulation : Pas encore stimulé</span>
             )}
-            <br />
+
             <button onClick={handleStimulation}>Stimuler</button>
         </div>
     );

@@ -43,7 +43,7 @@ const SpecieFeeding = ({ specie }: Props) => {
         }
     };
     return (
-        <div key={"nourrir"} className="container__actions__action">
+        <div key={"nourrir"}>
             <h4>Nourrissage des animaux :</h4>
             <br />
             {dernierNourrissage !== undefined ? (
@@ -51,7 +51,6 @@ const SpecieFeeding = ({ specie }: Props) => {
             ) : (
                 <span>Dernier nourrissage : Pas encore nourri(s)</span>
             )}
-            <br />
             <button onClick={handleFeeding}>Nourrir</button>
         </div>
     );

@@ -19,19 +19,17 @@ const ActionsBlock = ({ specie }: Props) => {
 
     useEffect(() => {
         if (actions) {
-            actions
-                .filter((action) => action.status === "Planifiée")
-                .slice(0, 3)
-                .forEach((action) =>
-                    setActionsToDisplay((prev) => [...prev, action])
-                );
+            setActionsToDisplay(
+                actions
+                    .filter((action) => action.status === "Planifiée")
+                    .slice(0, 3)
+            );
 
-            actions
-                .filter((action) => action.status === "Terminée")
-                .slice(0, 3)
-                .forEach((action) =>
-                    setActionsDone((prev) => [...prev, action])
-                );
+            setActionsDone(
+                actions
+                    .filter((action) => action.status === "Terminée")
+                    .slice(0, 3)
+            );
         } else {
             setActionsToDisplay([]);
             setActionsDone([]);
@@ -46,7 +44,7 @@ const ActionsBlock = ({ specie }: Props) => {
     };
 
     return (
-        <li className="container__small">
+        <div className="upper-container__inside">
             <h3>Prochaines actions à réaliser :</h3>
             <ul>
                 {actionsToDisplay.length > 0 ? (
@@ -90,7 +88,7 @@ const ActionsBlock = ({ specie }: Props) => {
                     <li>Aucune action réalisée</li>
                 )}
             </ul>
-        </li>
+        </div>
     );
 };
 
