@@ -3,11 +3,14 @@ import Enclosure from "./enclosures";
 import Specie from "./specie";
 
 export default interface Action {
-    createdBy: object;
+    _id: string;
+    createdBy: string;
     enclosure: Enclosure;
     specie: Specie;
     animal: Animal;
-    plannedDate: Date;
+    plannedDate: string;
     status: string;
     observation: string;
+    createdAt: string;
+    updatedAt: string;
 }

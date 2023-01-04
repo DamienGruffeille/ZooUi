@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
+import Action from "../interfaces/action";
 
 export const getActionsByZone = async (zoneId: string) => {
     const config = createAxiosConfig();
@@ -28,6 +29,22 @@ export const getActionsByZone = async (zoneId: string) => {
         } else {
             return null;
         }
+    }
+};
+
+export const getActionsBySpecie = async (specieId: string) => {
+    const config = createAxiosConfig();
+
+    const response = await axios.get(
+        `http://localhost:3000/api/actions/especes/${specieId}`,
+        config
+    );
+
+    const actions: Action[] = response.data.actions;
+    if (actions) {
+        return actions;
+    } else {
+        return null;
     }
 };
 

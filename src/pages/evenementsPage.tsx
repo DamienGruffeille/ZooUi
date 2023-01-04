@@ -345,11 +345,6 @@ const EvenementsPage = () => {
                 <ul className="eventList">
                     {eventsToDisplay.length > 0 ? (
                         eventsToDisplay
-
-                            // ?.filter(
-                            //     (event: IEvent) =>
-                            //         event.enclosure === selectedEnclosure
-                            // )
                             ?.slice(0, selectedRange)
                             .map((event: IEvent) => {
                                 return (

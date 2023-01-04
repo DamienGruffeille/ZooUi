@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAnimalsBySpecy } from "../fetchers/animals";
 import Specie from "../interfaces/specie";
@@ -8,9 +8,14 @@ import { getLastMovement } from "../fetchers/getEvents";
 type Props = {
     specie: Specie;
     childToParent: (action: boolean) => void;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
+const SpecieMovementBlock = ({
+    specie,
+    childToParent,
+    setEventCreated
+}: Props) => {
     const [notMovingAnimals, setnotMovingAnimals] = useState<string[]>([]);
     const [checkBoxChecked, setCheckBoxChecked] = useState<HTMLInputElement[]>(
         []
@@ -83,6 +88,7 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
                 }).format(Date.parse(event.createdAt))
             );
             setLastPosition(event.eventType);
+            setEventCreated(true);
         }
 
         checkBoxChecked.forEach((checkbox) => (checkbox.checked = false));
@@ -92,11 +98,11 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
     };
 
     return (
-        <div key={"position"} className="enclosureBlock__container__specie">
+        <div key={"position"} className="container__actions__action">
             <h4>Modifier position de l'espèce :</h4>
             <br />
             <span>Sélectionnez les animaux n'ayant pas bougé :</span>
-            <ul>
+            <ul className="bottom-container__list">
                 {animals?.map((animal, index) => {
                     return (
                         <li key={index}>
@@ -117,14 +123,7 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
             </ul>
             <br />
             <div>
-                Dernier mouvement : {lastPosition}, le {lastEvent}
-            </div>
-            <br />
-            <div
-                key={"buttons"}
-                className="enclosureBlock__container__specie__btn"
-            >
-                {" "}
+                Dernier mouvement : {lastPosition}, le {lastEvent}{" "}
                 {lastPosition === "Entrée" ? (
                     <button
                         onClick={handleSubmit}

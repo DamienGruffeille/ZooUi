@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { getLastEvent } from "../fetchers/getEvents";
 import { checkEnclosure } from "../fetchers/postEvent";
 import Specie from "../interfaces/specie";
@@ -7,9 +7,10 @@ import Employee from "../interfaces/employee";
 
 type Props = {
     specie: Specie;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const EnclosureCheck = ({ specie }: Props) => {
+const EnclosureCheck = ({ specie, setEventCreated }: Props) => {
     /** Récupération des zones de l'employé */
     const employeeLocalStorage = localStorage.getItem("employee");
 
@@ -37,12 +38,14 @@ const EnclosureCheck = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(verif.createdAt))
             );
+        } else {
+            setDerniereVerif("Enclos jamais vérifié");
         }
     }, [verif]);
 
     const handleClick = async () => {
         let event = await checkEnclosure(specie.enclosure._id);
-        console.log(event);
+
         if (event !== null) {
             setDerniereVerif(
                 new Intl.DateTimeFormat("fr-FR", {
@@ -51,19 +54,20 @@ const EnclosureCheck = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(event.createdAt))
             );
+            setEventCreated(true);
         }
     };
 
     return (
-        <div className="enclosureBlock__container__verify">
+        <div>
             <h4>Vérification de l'enclos :</h4>
-            <div>Dernière vérification le : {derniereVerif}</div>
+            <span>Dernière vérification le : {derniereVerif}</span>
             {employee?.role === "Vétérinaire" ||
             employee?.role === "Responsable" ? (
                 <button onClick={handleClick}>Enclos vérifié</button>
             ) : (
                 <button onClick={handleClick} disabled>
-                    Enclos vérifié
+                    Vérifier
                 </button>
             )}
         </div>

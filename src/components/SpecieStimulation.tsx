@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { stimulateSpecie } from "../fetchers/postEvent";
@@ -7,9 +7,10 @@ import Specie from "../interfaces/specie";
 
 type Props = {
     specie: Specie;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const SpecieStimulation = ({ specie }: Props) => {
+const SpecieStimulation = ({ specie, setEventCreated }: Props) => {
     const [derniereStimulation, setderniereStimulation] = useState<string>();
 
     const { data: stimulation } = useQuery({
@@ -40,11 +41,12 @@ const SpecieStimulation = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(event.createdAt))
             );
+            setEventCreated(true);
         }
     };
 
     return (
-        <div key={"stimuler"} className="enclosureBlock__container__specie">
+        <div key={"stimuler"}>
             <h4>Stimulation des animaux :</h4>
             <br />
             {derniereStimulation !== undefined ? (
@@ -52,7 +54,7 @@ const SpecieStimulation = ({ specie }: Props) => {
             ) : (
                 <span>Dernière stimulation : Pas encore stimulé</span>
             )}
-            <br />
+
             <button onClick={handleStimulation}>Stimuler</button>
         </div>
     );

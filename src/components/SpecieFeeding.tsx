@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { feedSpecie } from "../fetchers/postEvent";
@@ -7,9 +7,10 @@ import Specie from "../interfaces/specie";
 
 type Props = {
     specie: Specie;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const SpecieFeeding = ({ specie }: Props) => {
+const SpecieFeeding = ({ specie, setEventCreated }: Props) => {
     const [dernierNourrissage, setdernierNourrissage] = useState<string>();
 
     const { data: nourrissage } = useQuery({
@@ -40,10 +41,11 @@ const SpecieFeeding = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(event.createdAt))
             );
+            setEventCreated(true);
         }
     };
     return (
-        <div key={"nourrir"} className="enclosureBlock__container__specie">
+        <div key={"nourrir"}>
             <h4>Nourrissage des animaux :</h4>
             <br />
             {dernierNourrissage !== undefined ? (
@@ -51,7 +53,6 @@ const SpecieFeeding = ({ specie }: Props) => {
             ) : (
                 <span>Dernier nourrissage : Pas encore nourri(s)</span>
             )}
-            <br />
             <button onClick={handleFeeding}>Nourrir</button>
         </div>
     );
