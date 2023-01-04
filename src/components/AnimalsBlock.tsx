@@ -10,12 +10,17 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 
 type Props = {
     specie: Specie;
-    data: boolean | undefined;
-    setter: Dispatch<SetStateAction<boolean | undefined>>;
+    specieMovementDetected: boolean;
+    setSpecieMovementDetected: Dispatch<SetStateAction<boolean>>;
     setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const AnimalsBlock = ({ specie, data, setter, setEventCreated }: Props) => {
+const AnimalsBlock = ({
+    specie,
+    specieMovementDetected,
+    setSpecieMovementDetected,
+    setEventCreated
+}: Props) => {
     const {
         data: animals,
         refetch,
@@ -27,11 +32,11 @@ const AnimalsBlock = ({ specie, data, setter, setEventCreated }: Props) => {
     });
 
     useEffect(() => {
-        if (data) {
+        if (specieMovementDetected) {
             refetch();
-            setter(false);
+            setSpecieMovementDetected(false);
         }
-    }, [setter, refetch, data]);
+    }, [specieMovementDetected, refetch, setSpecieMovementDetected]);
 
     const handleMovement = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const target = e.target as HTMLButtonElement;

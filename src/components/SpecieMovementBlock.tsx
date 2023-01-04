@@ -7,21 +7,21 @@ import { getLastMovement } from "../fetchers/getEvents";
 
 type Props = {
     specie: Specie;
-    childToParent: (action: boolean) => void;
+    setSpecieMovementDetected: Dispatch<SetStateAction<boolean>>;
+
     setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
 const SpecieMovementBlock = ({
     specie,
-    childToParent,
+    // childToParent,
+    setSpecieMovementDetected,
     setEventCreated
 }: Props) => {
     const [notMovingAnimals, setnotMovingAnimals] = useState<string[]>([]);
     const [checkBoxChecked, setCheckBoxChecked] = useState<HTMLInputElement[]>(
         []
     );
-    const [didClickMovementButton, setdidClickMovementButton] =
-        useState<boolean>(true);
     const [lastEvent, setLastEvent] = useState<string>();
     const [lastPosition, setLastPosition] = useState<string>();
 
@@ -94,7 +94,7 @@ const SpecieMovementBlock = ({
         checkBoxChecked.forEach((checkbox) => (checkbox.checked = false));
         setCheckBoxChecked([]);
         setnotMovingAnimals([]);
-        childToParent(didClickMovementButton);
+        setSpecieMovementDetected(true);
     };
 
     return (
@@ -103,18 +103,18 @@ const SpecieMovementBlock = ({
             <br />
             <span>Sélectionnez les animaux n'ayant pas bougé :</span>
             <ul className="bottom-container__list">
-                {animals?.map((animal, index) => {
+                {animals?.map((animal) => {
                     return (
-                        <li key={index}>
+                        <li key={animal._id}>
                             <input
                                 title="animal"
                                 type="checkbox"
                                 name={animal.name}
                                 value={animal._id}
-                                id={`custom-checkbox-${index}`}
+                                id={`custom-checkbox-${animal._id}`}
                                 onChange={(e) => handleAnimalArray(e)}
                             />
-                            <label htmlFor={`custom-checkbox-${index}`}>
+                            <label htmlFor={`custom-checkbox-${animal._id}`}>
                                 {animal.name}
                             </label>
                         </li>

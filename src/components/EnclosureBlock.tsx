@@ -25,13 +25,9 @@ let species: Specie[] = [];
 
 const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
     const [selectedOption, setSelectedOption] = useState<string>("");
-    const [specieMovementDetected, setspecieMovementDetected] =
-        useState<boolean>();
+    const [specieMovementDetected, setSpecieMovementDetected] =
+        useState<boolean>(false);
     const [eventCreated, setEventCreated] = useState<boolean>(false);
-
-    const childToParent = useCallback((action: boolean) => {
-        setspecieMovementDetected(action);
-    }, []);
 
     /** fetch les espèces dans la zone de l'employé
      * si l'employé est autorisé sur toutes les zones, fetch
@@ -150,7 +146,9 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                             </div>
                             <SpecieMovementBlock
                                 specie={specie}
-                                childToParent={childToParent}
+                                setSpecieMovementDetected={
+                                    setSpecieMovementDetected
+                                }
                                 setEventCreated={setEventCreated}
                             />
                             <SpecieFeeding
@@ -166,8 +164,10 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                         <div>
                             <AnimalsBlock
                                 specie={specie}
-                                data={specieMovementDetected}
-                                setter={setspecieMovementDetected}
+                                specieMovementDetected={specieMovementDetected}
+                                setSpecieMovementDetected={
+                                    setSpecieMovementDetected
+                                }
                                 setEventCreated={setEventCreated}
                             />
                         </div>
