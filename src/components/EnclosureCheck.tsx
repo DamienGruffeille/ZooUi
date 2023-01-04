@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { getLastEvent } from "../fetchers/getEvents";
 import { checkEnclosure } from "../fetchers/postEvent";
 import Specie from "../interfaces/specie";
@@ -7,9 +7,10 @@ import Employee from "../interfaces/employee";
 
 type Props = {
     specie: Specie;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const EnclosureCheck = ({ specie }: Props) => {
+const EnclosureCheck = ({ specie, setEventCreated }: Props) => {
     /** Récupération des zones de l'employé */
     const employeeLocalStorage = localStorage.getItem("employee");
 
@@ -44,7 +45,7 @@ const EnclosureCheck = ({ specie }: Props) => {
 
     const handleClick = async () => {
         let event = await checkEnclosure(specie.enclosure._id);
-        console.log(event);
+
         if (event !== null) {
             setDerniereVerif(
                 new Intl.DateTimeFormat("fr-FR", {
@@ -53,6 +54,7 @@ const EnclosureCheck = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(event.createdAt))
             );
+            setEventCreated(true);
         }
     };
 

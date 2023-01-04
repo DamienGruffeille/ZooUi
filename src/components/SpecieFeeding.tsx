@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { feedSpecie } from "../fetchers/postEvent";
@@ -7,9 +7,10 @@ import Specie from "../interfaces/specie";
 
 type Props = {
     specie: Specie;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const SpecieFeeding = ({ specie }: Props) => {
+const SpecieFeeding = ({ specie, setEventCreated }: Props) => {
     const [dernierNourrissage, setdernierNourrissage] = useState<string>();
 
     const { data: nourrissage } = useQuery({
@@ -40,6 +41,7 @@ const SpecieFeeding = ({ specie }: Props) => {
                     timeZone: "Europe/Paris"
                 }).format(Date.parse(event.createdAt))
             );
+            setEventCreated(true);
         }
     };
     return (

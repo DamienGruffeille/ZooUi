@@ -1,16 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { getEventsBySpecie } from "../fetchers/getEvents";
 import IEvent from "../interfaces/event";
 
 type Props = {
     specie: string;
+    eventCreated: boolean | undefined;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const EventsBlock = ({ specie }: Props) => {
+const EventsBlock = ({ specie, eventCreated, setEventCreated }: Props) => {
     const [eventsToDisplay, setEventsToDisplay] = useState<IEvent[]>([]);
 
-    const { data: events } = useQuery({
+    const { data: events, refetch } = useQuery({
         queryKey: ["Events", specie],
         queryFn: () => getEventsBySpecie(specie),
         enabled: !!specie
@@ -18,11 +20,18 @@ const EventsBlock = ({ specie }: Props) => {
 
     useEffect(() => {
         if (events) {
-            setEventsToDisplay(events.slice(-6));
+            setEventsToDisplay(events.slice(0, 6));
         } else {
             setEventsToDisplay([]);
         }
     }, [events]);
+
+    useEffect(() => {
+        if (eventCreated) {
+            refetch();
+            setEventCreated(false);
+        }
+    }, [eventCreated, refetch, setEventCreated]);
 
     return (
         <div className="upper-container__inside">

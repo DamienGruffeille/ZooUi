@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAnimalsBySpecy } from "../fetchers/animals";
 import Specie from "../interfaces/specie";
@@ -8,9 +8,14 @@ import { getLastMovement } from "../fetchers/getEvents";
 type Props = {
     specie: Specie;
     childToParent: (action: boolean) => void;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
+const SpecieMovementBlock = ({
+    specie,
+    childToParent,
+    setEventCreated
+}: Props) => {
     const [notMovingAnimals, setnotMovingAnimals] = useState<string[]>([]);
     const [checkBoxChecked, setCheckBoxChecked] = useState<HTMLInputElement[]>(
         []
@@ -83,6 +88,7 @@ const SpecieMovementBlock = ({ specie, childToParent }: Props) => {
                 }).format(Date.parse(event.createdAt))
             );
             setLastPosition(event.eventType);
+            setEventCreated(true);
         }
 
         checkBoxChecked.forEach((checkbox) => (checkbox.checked = false));

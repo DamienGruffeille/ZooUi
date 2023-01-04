@@ -12,9 +12,10 @@ type Props = {
     specie: Specie;
     data: boolean | undefined;
     setter: Dispatch<SetStateAction<boolean | undefined>>;
+    setEventCreated: Dispatch<SetStateAction<boolean>>;
 };
 
-const AnimalsBlock = ({ specie, data, setter }: Props) => {
+const AnimalsBlock = ({ specie, data, setter, setEventCreated }: Props) => {
     const {
         data: animals,
         refetch,
@@ -27,9 +28,6 @@ const AnimalsBlock = ({ specie, data, setter }: Props) => {
 
     useEffect(() => {
         if (data) {
-            console.log(
-                "Child component : Un bouton mouvement a été activé : " + data
-            );
             refetch();
             setter(false);
         }
@@ -37,14 +35,17 @@ const AnimalsBlock = ({ specie, data, setter }: Props) => {
 
     const handleMovement = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const target = e.target as HTMLButtonElement;
-        console.log("Animal à bouger : " + target.value);
         const animalId = target.value;
+
         if (target.innerHTML === "Sortir") {
             await putAnimalOutside(animalId);
         } else {
             await putAnimalInside(animalId);
         }
+
         refetch();
+
+        setEventCreated(true);
     };
 
     return (

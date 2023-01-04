@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, ReactElement } from "react";
+import { useState, ReactElement, useCallback } from "react";
 import AsyncSelect from "react-select/async";
 import { createAxiosConfig } from "../functions/createAxiosConfig";
 import Specie from "../interfaces/specie";
@@ -24,62 +24,64 @@ const config = createAxiosConfig();
 let species: Specie[] = [];
 
 const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
-    console.log("Render");
-
     const [selectedOption, setSelectedOption] = useState<string>("");
     const [specieMovementDetected, setspecieMovementDetected] =
         useState<boolean>();
+    const [eventCreated, setEventCreated] = useState<boolean>(false);
 
-    const childToParent = (action: boolean) => {
-        console.log("Parent component, specieMovementDetected : " + action);
+    const childToParent = useCallback((action: boolean) => {
         setspecieMovementDetected(action);
-    };
+    }, []);
 
     /** fetch les espèces dans la zone de l'employé
      * si l'employé est autorisé sur toutes les zones, fetch
      * toutes les espèces du zoo
      */
-    const loadOptions = (
-        inputValue: string,
-        callback: (options: Options[]) => void
-    ) => {
-        console.log("on load options function");
-        if (zone !== "toutes") {
-            axios
-                .get(
-                    `http://localhost:3000/api/especes/get/zone/${zone}`,
-                    config
-                )
-                .then((response) => {
-                    const options: Options[] = [];
-                    response.data.forEach((specie: Specie) => {
-                        options.push({ label: specie.name, value: specie._id });
+    const loadOptions = useCallback(
+        (inputValue: string, callback: (options: Options[]) => void) => {
+            if (zone !== "toutes") {
+                axios
+                    .get(
+                        `http://localhost:3000/api/especes/get/zone/${zone}`,
+                        config
+                    )
+                    .then((response) => {
+                        const options: Options[] = [];
+                        response.data.forEach((specie: Specie) => {
+                            options.push({
+                                label: specie.name,
+                                value: specie._id
+                            });
+                        });
+                        species = response.data;
+                        callback(options);
                     });
-                    species = response.data;
-                    callback(options);
-                });
-        } else {
-            axios
-                .get("http://localhost:3000/api/especes/get", config)
-                .then((response) => {
-                    const options: Options[] = [];
-                    response.data.species.forEach((specie: Specie) => {
-                        options.push({ label: specie.name, value: specie._id });
-                    });
-                    species = response.data.species;
+            } else {
+                axios
+                    .get("http://localhost:3000/api/especes/get", config)
+                    .then((response) => {
+                        const options: Options[] = [];
+                        response.data.species.forEach((specie: Specie) => {
+                            options.push({
+                                label: specie.name,
+                                value: specie._id
+                            });
+                        });
+                        species = response.data.species;
 
-                    callback(options);
-                });
-        }
-    };
+                        callback(options);
+                    });
+            }
+        },
+        [zone]
+    );
 
     /**  Définit l'espèce sélectionnée pour fetch tous les animaux
      * de cette espèce
      */
-    const onChangeSelectedOption = (e: any) => {
+    const onChangeSelectedOption = useCallback((e: any) => {
         setSelectedOption(e.value);
-        console.log("L'espèce a changé");
-    };
+    }, []);
 
     const specie: Specie | undefined = species.find((specie) => {
         return specie._id === selectedOption;
@@ -107,13 +109,20 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                 </span>
                             </div>
                             <div>
-                                <EnclosureCheck specie={specie} />
+                                <EnclosureCheck
+                                    specie={specie}
+                                    setEventCreated={setEventCreated}
+                                />
                             </div>
                         </div>
 
                         <ActionsBlock specie={selectedOption} />
 
-                        <EventsBlock specie={selectedOption} />
+                        <EventsBlock
+                            specie={selectedOption}
+                            eventCreated={eventCreated}
+                            setEventCreated={setEventCreated}
+                        />
                     </>
                 )}
             </div>
@@ -142,9 +151,16 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                             <SpecieMovementBlock
                                 specie={specie}
                                 childToParent={childToParent}
+                                setEventCreated={setEventCreated}
                             />
-                            <SpecieFeeding specie={specie} />
-                            <SpecieStimulation specie={specie} />
+                            <SpecieFeeding
+                                specie={specie}
+                                setEventCreated={setEventCreated}
+                            />
+                            <SpecieStimulation
+                                specie={specie}
+                                setEventCreated={setEventCreated}
+                            />
                         </div>
 
                         <div>
@@ -152,6 +168,7 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                                 specie={specie}
                                 data={specieMovementDetected}
                                 setter={setspecieMovementDetected}
+                                setEventCreated={setEventCreated}
                             />
                         </div>
                     </>
