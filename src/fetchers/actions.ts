@@ -32,6 +32,20 @@ export const getActionsByZone = async (zoneId: string) => {
     }
 };
 
+export const getActionsByEmployee = async (employeeName: string) => {
+    const config = createAxiosConfig();
+
+    const response = await axios.get(
+        `http://localhost:3000/api/actions/employe/${employeeName}`,
+        config
+    );
+
+    const actions: Action[] = response.data.actions;
+    console.log("Actions fetcher : " + actions);
+
+    return actions;
+};
+
 export const getActionsBySpecie = async (specieId: string) => {
     const config = createAxiosConfig();
 
@@ -57,7 +71,6 @@ export const getNextAction = async (employeeId: string) => {
     );
 
     if (response.data) {
-        console.log(response.data);
         const action: any = response.data;
         return action;
     } else {
@@ -70,15 +83,12 @@ export const updateAction = async (actionId: string) => {
     const payLoad = { _id: actionId };
 
     const response = await axios.put(
-        `http://localhost:3000/api/actions/update/${actionId}`,
+        `http://localhost:3000/api/actions/update`,
         payLoad,
         config
     );
 
-    if (response.data) {
-        const actionUpdated: any = response.data.action;
-        return actionUpdated;
-    } else {
-        return null;
-    }
+    const updatedAction: Action = response.data.actionUpdated;
+
+    return updatedAction;
 };

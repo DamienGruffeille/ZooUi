@@ -91,6 +91,7 @@ const EnclosureBlock = ({ zone }: EnclosureBlockProps): ReactElement => {
                 defaultOptions
                 placeholder="Sélectionner l'espèce"
                 onChange={onChangeSelectedOption}
+                className="specySelect"
             />
             <div className="upper-container">
                 {specie && (

@@ -1,0 +1,40 @@
+main {
+    width: 100%;
+    @include flex-align(column, start);
+    flex-wrap: wrap;
+}
+
+.upper-action-container {
+    width: 80%;
+    @include flex-align(row, center, start);
+    &__element {
+        width: 100%;
+        @include box-decoration;
+        height: 100%;
+        div {
+            @include box-decoration;
+        }
+    }
+}
+
+.middle-action-container {
+    @include box-decoration;
+    width: 80%;
+    ul {
+        @include flex-align(row);
+        li {
+            @include box-decoration;
+        }
+    }
+}
+
+.bottom-action-container {
+    @include box-decoration;
+    width: 80%;
+    ul {
+        @include flex-align(row);
+        li {
+            @include box-decoration;
+        }
+    }
+}

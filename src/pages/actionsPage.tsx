@@ -1,79 +1,76 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
-import { getNextAction, updateAction } from "../fetchers/actions";
-import Action from "../interfaces/action";
+import ActionNextBlock from "../components/ActionNextBlock";
+import ActionsRecapBlock from "../components/ActionsRecapBlock";
+import { getActionsByEmployee } from "../fetchers/actions";
 import Employee from "../interfaces/employee";
+import ActionsLateBlock from "../components/ActionsLateBlock";
+import ActionsToDoBlock from "../components/ActionsToDoBlock";
 
 const ActionsPage = () => {
     const employeeLocalStorage = localStorage.getItem("employee");
-    const [employeeZone, setEmployeeZone] = useState<string>("");
-    const [employeeFullName, setEmployeeFullName] = useState<string>("");
     const [employeeName, setEmployeeName] = useState<string>("");
-    const [actionToDisplay, setActionToDisplay] = useState<any>();
+    const [actionClosed, setActionClosed] = useState<boolean>(false);
+    const [numberOfActionsToDoToday, setNumberOfActionsToDoToday] =
+        useState<number>(0);
+    const [numberOfActionsLate, setNumberOfActionsLate] = useState<number>(0);
 
     /** Récupère l'employé stocké dans localStorage pour définir la zone à laquelle il a accès */
     useEffect(() => {
         if (employeeLocalStorage) {
             const employee: Employee = JSON.parse(employeeLocalStorage);
-            setEmployeeZone(employee.zone);
-            setEmployeeFullName(employee.firstName + " " + employee.name);
+
             setEmployeeName(employee.name);
         }
     }, [employeeLocalStorage]);
 
-    const { data: nextAction } = useQuery({
-        queryKey: ["Next Action"],
-        queryFn: () => getNextAction(employeeName),
+    const { data: actions, refetch } = useQuery({
+        queryKey: ["Actions", employeeName],
+        queryFn: () => getActionsByEmployee(employeeName),
         enabled: !!employeeName
     });
 
     useEffect(() => {
-        if (nextAction !== undefined && nextAction !== null)
-            setActionToDisplay(nextAction.action);
-    }, [nextAction]);
-
-    const handleClick = async () => {
-        const resp = await updateAction(nextAction.action._id);
-        console.log(resp);
-        // setActionToDisplay(resp.action);
-        // console.log("Resp : " + resp);
-        // const _nextAction = await getNextAction(employeeName);
-        // console.log("Next Action : " + _nextAction);
-    };
-
-    useEffect(() => {
-        console.log("Action to Display : " + actionToDisplay);
-    }, [actionToDisplay]);
+        if (actionClosed) refetch();
+        setActionClosed(false);
+    }, [actionClosed, refetch]);
 
     return (
         <>
             <Header />
             <main>
-                <div className="actions__next">
-                    <h4>Prochaine Action</h4>
-                    <br />
-                    {actionToDisplay !== undefined &&
-                    actionToDisplay !== null ? (
-                        <>
-                            Statut : {actionToDisplay.status}
-                            <br />
-                            Date prévue : {actionToDisplay.plannedDate}
-                            <br />
-                            Enclos : {actionToDisplay.enclosure}
-                            <br />
-                            Espèce : {actionToDisplay.specie}
-                            <br />
-                            Animal : {actionToDisplay.animal}
-                            <br />
-                            Observation : {actionToDisplay.observation}
-                            <br />
-                            <button onClick={handleClick}>Terminer</button>
-                        </>
-                    ) : (
-                        <span>Aucun évènement à venir</span>
-                    )}
-                </div>
+                {actions && (
+                    <>
+                        <div className="upper-action-container">
+                            <ActionsRecapBlock
+                                actions={actions}
+                                actionClosed={actionClosed}
+                                numberOfActionsToDoToday={
+                                    numberOfActionsToDoToday
+                                }
+                                numberOfActionsLate={numberOfActionsLate}
+                            />
+                            <ActionNextBlock
+                                employeeName={employeeName}
+                                actionClosed={actionClosed}
+                                setActionClosed={setActionClosed}
+                            />
+                        </div>
+                        <ActionsLateBlock
+                            actions={actions}
+                            setActionClosed={setActionClosed}
+                            setNumberOfActionsLate={setNumberOfActionsLate}
+                        />
+                        <ActionsToDoBlock
+                            actions={actions}
+                            setActionClosed={setActionClosed}
+                            setNumberOfActionsToDoToday={
+                                setNumberOfActionsToDoToday
+                            }
+                        />
+                    </>
+                )}
             </main>
         </>
     );

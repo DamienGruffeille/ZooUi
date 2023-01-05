@@ -4,6 +4,12 @@ main {
     flex-wrap: wrap;
 }
 
+.specySelect {
+    margin-top: 5px;
+    width: 200px;
+    height: 40px;
+}
+
 .upper-container {
     width: 80%;
     @include flex-align(row, center);
@@ -47,4 +53,41 @@ button {
     height: 25px;
     margin: 5px;
     border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .upper-container {
+        width: 80%;
+        @include flex-align(row, center);
+        flex-wrap: wrap;
+
+        &__inside {
+            @include box-decoration;
+            width: 100%;
+        }
+    }
+
+    .bottom-container {
+        width: 100%;
+        @include flex-align(row, center, start);
+        flex-wrap: wrap;
+        &__inside {
+            width: 100%;
+        }
+        &__inside > * {
+            @include box-decoration;
+        }
+        &__list {
+            display: block;
+            width: 100%;
+        }
+        li {
+            width: 100%;
+            @include box-decoration;
+        }
+        &__title {
+            width: 100%;
+            @include box-decoration;
+        }
+    }
 }
