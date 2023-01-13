@@ -81,7 +81,9 @@ const ActionsToDoBlock = ({
                         );
                     })
                 ) : (
-                    <li>Aucune action à effectuer aujourd'hui</li>
+                    <li key={"noaction"}>
+                        Aucune action à effectuer aujourd'hui
+                    </li>
                 )}
             </ul>
         </div>
